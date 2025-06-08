@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Chino Car Parking Solution</title>
+    <title>Chno Park</title>
     <link rel="stylesheet" href="custom.css" />
     <style>
         /* Reset and base styles */
@@ -31,12 +31,20 @@
             align-items: center;
             padding-bottom: 1rem;
             border-bottom: 1px solid #dee2e6;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1000;
         }
         .navbar-brand {
             font-weight: 700;
             font-size: 1.75rem;
             color: #2563eb;
             text-decoration: none;
+        }
+        nav {
+            display: flex;
+            align-items: center;
         }
         nav a {
             color: #495057;
@@ -47,6 +55,46 @@
         }
         nav a:hover {
             color: #2563eb;
+        }
+        /* Hamburger menu styles */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            width: 25px;
+            height: 20px;
+            justify-content: space-between;
+        }
+        .hamburger div {
+            height: 3px;
+            background-color: #2563eb;
+            border-radius: 2px;
+        }
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background: white;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                border-top: 1px solid #dee2e6;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            nav.active {
+                display: flex;
+            }
+            nav a {
+                margin: 1rem;
+                font-size: 1.2rem;
+            }
+            .hamburger {
+                display: flex;
+            }
+            .container {
+                position: relative;
+            }
         }
         .hero {
             text-align: center;
@@ -183,8 +231,13 @@
 <body>
     <div class="container">
         <header>
-            <a href="#" class="navbar-brand">Chino Car Parking Solution</a>
-            <nav>
+            <a href="#" class="navbar-brand">Chno Park</a>
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <nav id="nav-menu">
                 <a href="#features">Features</a>
                 <a href="#testimonials">Testimonials</a>
                 <a href="#hours-pricing">Hours & Pricing</a>
@@ -200,8 +253,8 @@
         </section>
         <section class="map-container">
             <h3>Our Location</h3>
-            <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.123456789!2d39.234567!3d-6.789012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4c1234567890%3A0xabcdef1234567890!2sChino%20Park%2C%20Kimara%2C%20Dar%20es%20Salaam!5e0!3m2!1sen!2stz!4v1680000000000!5m2!1sen!2stz"
+<iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.123456789!2d39.234567!3d-6.789012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4c1234567890%3A0xabcdef1234567890!2sChino%20Park%20Golani%2C%20Golani%2C%20Mringo%20Road%2C%20Dar%20es%20Salaam!5e0!3m2!1sen!2stz!4v1680000000000!5m2!1sen!2stz"
                 width="100%" height="300" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </section>
         <section id="features" class="features">
@@ -252,5 +305,13 @@
             &copy; 2024 Chino Car Parking Solution. All rights reserved.
         </footer>
     </div>
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    </script>
 </body>
 </html>

@@ -111,10 +111,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       passwordInput.type = 'text';
       toggleBtn.textContent = 'Hide';
       toggleBtn.setAttribute('aria-label', 'Hide password');
+      toggleBtn.setAttribute('aria-pressed', 'true');
     } else {
       passwordInput.type = 'password';
       toggleBtn.textContent = 'Show';
       toggleBtn.setAttribute('aria-label', 'Show password');
+      toggleBtn.setAttribute('aria-pressed', 'false');
     }
   }
 
@@ -129,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     forgotPasswordLink.addEventListener('click', function (e) {
       e.preventDefault();
-      alert('Forgot password feature is not implemented yet.');
+      window.location.href = 'forgot_password.php';
     });
 
     form.addEventListener('submit', function (e) {

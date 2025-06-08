@@ -17,6 +17,8 @@ $start_date = '';
 $end_date = '';
 
 if (isset($_GET['action']) && ($_GET['action'] === 'filter' || $_GET['action'] === 'export')) {
+    ob_start(); // Start output buffering to capture any unexpected output
+
     $start_date = $_GET['start_date'] ?? '';
     $end_date = $_GET['end_date'] ?? '';
     $vehicle_type_filter = $_GET['vehicle_type'] ?? '';

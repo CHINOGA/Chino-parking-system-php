@@ -32,15 +32,33 @@
           <a class="nav-link" href="sms_send.php">Send SMS</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="user_profile.php">Profile</a>
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">Profile</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="change_password.php">Change Password</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="logout.php">Logout</a>
-        </li>
+        <!-- Removed Change Password and Logout links as per request -->
       </ul>
+
+      <!-- Profile Modal -->
+      <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+              <h5 class="modal-title" id="profileModalLabel">User Profile</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <?php if (isset($_SESSION['username'])): ?>
+                <p><strong>Username:</strong> <?= htmlspecialchars($_SESSION['username']) ?></p>
+              <?php else: ?>
+                <p>Username not available.</p>
+              <?php endif; ?>
+              <a href="change_password.php" class="btn btn-primary w-100 mb-2">Change Password</a>
+              <form method="post" action="logout.php" onsubmit="return confirm('Are you sure you want to logout?');">
+                <button type="submit" class="btn btn-danger w-100">Logout</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
       <?php endif; ?>
     </div>
   </div>

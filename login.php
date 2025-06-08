@@ -2,26 +2,34 @@
 session_start();
 require_once __DIR__ . '/config.php';
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    if ($username === '' || $password === '') {
-        $error = 'Please enter both username and password.';
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $error = 'Invalid CSRF token.';
     } else {
-        $stmt = $pdo->prepare('SELECT id, password_hash FROM users WHERE username = ?');
-        $stmt->execute([$username]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
 
-        if ($user && password_verify($password, $user['password_hash'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $username;
-            header('Location: vehicle_entry.php');
-            exit;
+        if ($username === '' || $password === '') {
+            $error = 'Please enter both username and password.';
         } else {
-            $error = 'Invalid username or password.';
+            $stmt = $pdo->prepare('SELECT id, password_hash FROM users WHERE username = ?');
+            $stmt->execute([$username]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $username;
+                header('Location: vehicle_entry.php');
+                exit;
+            } else {
+                $error = 'Invalid username or password.';
+            }
         }
     }
 }
@@ -89,6 +97,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (installBtn) {
       installBtn.style.display = 'none';
     }
+  });
+
+  // Show password toggle
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('togglePassword');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleBtn.textContent = 'Hide';
+    } else {
+      passwordInput.type = 'password';
+      toggleBtn.textContent = 'Show';
+    }
+  }
+
+  // Client-side validation and form submission handling
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const errorDiv = document.getElementById('clientError');
+    const loginButton = document.getElementById('loginButton');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorDiv.textContent = '';
+
+      if (usernameInput.value.trim() === '') {
+        errorDiv.textContent = 'Please enter your username.';
+        usernameInput.focus();
+        return;
+      }
+      if (passwordInput.value === '') {
+        errorDiv.textContent = 'Please enter your password.';
+        passwordInput.focus();
+        return;
+      }
+
+      // Disable button and show loading text
+      loginButton.disabled = true;
+      loginButton.textContent = 'Logging in...';
+
+      form.submit();
+    });
   });
 </script>
 <style>
@@ -174,6 +226,31 @@ button {
 button:hover {
   background-color: #1e40af;
 }
+.show-password-btn {
+  position: absolute;
+  right: 1rem;
+  top: 2.5rem;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+.form-group {
+  position: relative;
+}
+.forgot-password {
+  display: block;
+  margin-top: 0.5rem;
+  text-align: right;
+  font-size: 0.875rem;
+  color: #93c5fd;
+  text-decoration: none;
+}
+.forgot-password:hover {
+  text-decoration: underline;
+}
 </style>
 </head>
 <body>
@@ -183,12 +260,18 @@ button:hover {
     <?php if ($error): ?>
         <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
-    <form method="post" action="login.php" novalidate>
+    <div id="clientError" class="error" role="alert" aria-live="assertive"></div>
+    <form id="loginForm" method="post" action="login.php" novalidate>
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" required autofocus />
+        <input type="text" id="username" name="username" required autofocus aria-required="true" aria-describedby="usernameHelp" />
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" required />
-        <button type="submit">Login</button>
+        <div class="form-group">
+          <input type="password" id="password" name="password" required aria-required="true" aria-describedby="passwordHelp" />
+          <button type="button" id="togglePassword" class="show-password-btn" aria-label="Show password" onclick="togglePassword()">Show</button>
+        </div>
+        <a href="#" class="forgot-password" tabindex="0">Forgot password?</a>
+        <button type="submit" id="loginButton">Login</button>
     </form>
 </div>
 </body>

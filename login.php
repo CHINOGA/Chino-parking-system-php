@@ -106,9 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (passwordInput.type === 'password') {
       passwordInput.type = 'text';
       toggleBtn.textContent = 'Hide';
+      toggleBtn.setAttribute('aria-label', 'Hide password');
     } else {
       passwordInput.type = 'password';
       toggleBtn.textContent = 'Show';
+      toggleBtn.setAttribute('aria-label', 'Show password');
     }
   }
 
@@ -119,6 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     const passwordInput = document.getElementById('password');
     const errorDiv = document.getElementById('clientError');
     const loginButton = document.getElementById('loginButton');
+    const forgotPasswordLink = document.querySelector('.forgot-password');
+
+    forgotPasswordLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      alert('Forgot password feature is not implemented yet.');
+    });
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();

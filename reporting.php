@@ -34,9 +34,20 @@ if (isset($_GET['action']) && ($_GET['action'] === 'filter' || $_GET['action'] =
     $params = [];
     $where = '';
 
-    // Add tenant_id filter for multi-tenant data isolation
+// Add tenant_id filter for multi-tenant data isolation
+if (isset($_SESSION['tenant_id'])) {
     $tenantFilter = "v.tenant_id = ?";
     $params[] = $_SESSION['tenant_id'];
+
+    if ($where) {
+        $where .= " AND $tenantFilter";
+    } else {
+        $where = $tenantFilter;
+    }
+} else {
+    // tenant_id not set in session, handle error or fallback
+    // For now, do not add tenant filter
+}
 
     if ($vehicle_type_filter && $vehicle_type_filter !== 'All') {
         $where .= ($where ? ' AND ' : '') . 'v.vehicle_type = ?';

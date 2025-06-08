@@ -254,7 +254,7 @@
         <section class="map-container">
             <h3>Our Location</h3>
 <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.123456789!2d39.234567!3d-6.789012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4c1234567890%3A0xabcdef1234567890!2sChino%20Park%20Golani%2C%20Golani%2C%20Mringo%20Road%2C%20Dar%20es%20Salaam!5e0!3m2!1sen!2stz!4v1680000000000!5m2!1sen!2stz"
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15869.123456789!2d39.152002!3d-6.813609!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4c1234567890%3A0xabcdef1234567890!2sChino%20Park!5e0!3m2!1sen!2stz!4v1680000000000!5m2!1sen!2stz"
                 width="100%" height="300" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </section>
         <section id="features" class="features">

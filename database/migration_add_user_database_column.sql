@@ -1,0 +1,2 @@
+ALTER TABLE users
+ADD COLUMN user_database VARCHAR(255) NOT NULL AFTER phone;

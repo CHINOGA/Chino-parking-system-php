@@ -74,14 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
             } else {
-                // Insert new vehicle
-                $stmt = $pdo->prepare('INSERT INTO vehicles (registration_number, vehicle_type, driver_name, phone_number) VALUES (?, ?, ?, ?)');
-                $stmt->execute([$registration_number, $vehicle_type, $driver_name, $phone_number]);
-                $vehicle_id = $pdo->lastInsertId();
+            // Insert new vehicle with tenant_id
+            $stmt = $pdo->prepare('INSERT INTO vehicles (registration_number, vehicle_type, driver_name, phone_number, tenant_id) VALUES (?, ?, ?, ?, ?)');
+            $stmt->execute([$registration_number, $vehicle_type, $driver_name, $phone_number, $_SESSION['tenant_id']]);
+            $vehicle_id = $pdo->lastInsertId();
 
-                // Insert parking entry
-                $stmt = $pdo->prepare('INSERT INTO parking_entries (vehicle_id) VALUES (?)');
-                $stmt->execute([$vehicle_id]);
+            // Insert parking entry with tenant_id
+            $stmt = $pdo->prepare('INSERT INTO parking_entries (vehicle_id, tenant_id) VALUES (?, ?)');
+            $stmt->execute([$vehicle_id, $_SESSION['tenant_id']]);
 
                 // Send entry SMS
                 $message = "Vehicle $registration_number has entered the parking lot. Thank you for using Chino Parking System.";

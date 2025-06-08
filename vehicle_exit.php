@@ -45,12 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $total_fee = $days * $fee_per_day;
 
                 // Update exit_time to current timestamp
-                $stmt = $pdo->prepare('UPDATE parking_entries SET exit_time = NOW() WHERE id = ? AND tenant_id = ?');
-                $stmt->execute([$entry['entry_id'], $_SESSION['tenant_id']]);
+            $stmt = $pdo->prepare('UPDATE parking_entries SET exit_time = NOW() WHERE id = ? AND tenant_id = ?');
+            $stmt->execute([$entry['entry_id'], $_SESSION['tenant_id']]);
 
-                // Insert revenue record
-                $stmt = $pdo->prepare('INSERT INTO revenue (parking_entry_id, amount, tenant_id) VALUES (?, ?, ?)');
-                $stmt->execute([$entry['entry_id'], $total_fee, $_SESSION['tenant_id']]);
+            // Insert revenue record with tenant_id
+            $stmt = $pdo->prepare('INSERT INTO revenue (parking_entry_id, amount, tenant_id) VALUES (?, ?, ?)');
+            $stmt->execute([$entry['entry_id'], $total_fee, $_SESSION['tenant_id']]);
 
                 // Format phone number to international format 2557XXXXXXX
                 $phone_number = $entry['phone_number'];

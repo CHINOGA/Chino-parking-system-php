@@ -5,52 +5,57 @@ require_once __DIR__ . '/config.php';
 $error = '';
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $usernameOrEmail = trim($_POST['username_or_email'] ?? '');
+require_once __DIR__ . '/SmsService.php';
 
-    if ($usernameOrEmail === '') {
-        $error = 'Please enter your username or email.';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $emailOrPhone = trim($_POST['email_or_phone'] ?? '');
+
+    if ($emailOrPhone === '') {
+        $error = 'Please enter your email or phone number.';
     } else {
-        // Find user by username (assuming no email field in users table)
-        $stmt = $pdo->prepare('SELECT id, username FROM users WHERE username = ?');
-        $stmt->execute([$usernameOrEmail]);
+        // Find user by email or phone
+        $stmt = $pdo->prepare('SELECT id, username, email, phone FROM users WHERE email = ? OR phone = ?');
+        $stmt->execute([$emailOrPhone, $emailOrPhone]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) {
             $error = 'User not found.';
         } else {
-            // Generate token and expiry (1 hour)
-            $token = bin2hex(random_bytes(32));
-            $expiresAt = date('Y-m-d H:i:s', time() + 3600);
+            // Generate OTP and expiry (10 minutes)
+            $otp = random_int(100000, 999999);
+            $expiresAt = date('Y-m-d H:i:s', time() + 600);
 
-            // Insert token into password_resets table
+            // Insert OTP into password_resets table (reuse token column for OTP)
             $stmt = $pdo->prepare('INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)');
-            $stmt->execute([$user['id'], $token, $expiresAt]);
+            $stmt->execute([$user['id'], $otp, $expiresAt]);
 
-            // Send reset email
-            $resetLink = sprintf(
-                '%s/reset_password.php?token=%s',
-                (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']),
-                $token
-            );
+            $smsService = new SmsService();
 
-            $to = $user['username'] . '@example.com'; // Placeholder email, adjust as needed
-            $subject = 'Password Reset Request';
-            $message = "Hello " . htmlspecialchars($user['username']) . ",\n\n";
-            $message .= "To reset your password, please click the link below or copy and paste it into your browser:\n\n";
-            $message .= $resetLink . "\n\n";
-            $message .= "This link will expire in 1 hour.\n\n";
-            $message .= "If you did not request a password reset, please ignore this email.\n\n";
-            $message .= "Regards,\nChino Parking System";
+            if (filter_var($emailOrPhone, FILTER_VALIDATE_EMAIL)) {
+                // Send reset email with OTP
+                $subject = 'Password Reset OTP';
+                $message = "Hello " . htmlspecialchars($user['username']) . ",\n\n";
+                $message .= "Your password reset OTP is: $otp\n\n";
+                $message .= "This OTP will expire in 10 minutes.\n\n";
+                $message .= "If you did not request a password reset, please ignore this email.\n\n";
+                $message .= "Regards,\nChino Parking System";
 
-            $headers = 'From: no-reply@chinoparkingsystem.com' . "\r\n" .
-                       'Reply-To: no-reply@chinoparkingsystem.com' . "\r\n" .
-                       'X-Mailer: PHP/' . phpversion();
+                $headers = 'From: no-reply@chinoparkingsystem.com' . "\r\n" .
+                           'Reply-To: no-reply@chinoparkingsystem.com' . "\r\n" .
+                           'X-Mailer: PHP/' . phpversion();
 
-            if (mail($to, $subject, $message, $headers)) {
-                $success = 'A password reset link has been sent to your email address.';
+                if (mail($user['email'], $subject, $message, $headers)) {
+                    $success = 'A password reset OTP has been sent to your email address.';
+                } else {
+                    $error = 'Failed to send password reset email. Please try again later.';
+                }
             } else {
-                $error = 'Failed to send password reset email. Please try again later.';
+                // Send OTP via SMS
+                if ($smsService->sendSms($user['phone'], "Your password reset OTP is: $otp. It expires in 10 minutes.")) {
+                    $success = 'A password reset OTP has been sent to your phone number.';
+                } else {
+                    $error = 'Failed to send password reset SMS. Please try again later.';
+                }
             }
         }
     }
@@ -124,9 +129,9 @@ button:hover {
         <div class="success"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
     <form method="post" action="forgot_password.php" novalidate>
-        <label for="username_or_email">Username</label>
-        <input type="text" id="username_or_email" name="username_or_email" required autofocus />
-        <button type="submit">Send Reset Link</button>
+        <label for="email_or_phone">Email or Phone Number</label>
+        <input type="text" id="email_or_phone" name="email_or_phone" required autofocus />
+        <button type="submit">Send Reset OTP</button>
     </form>
     <p><a href="login.php" style="color:#a5b4fc;">Back to Login</a></p>
 </div>

@@ -7,26 +7,32 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
-    if ($username === '' || $password === '' || $confirmPassword === '') {
+    if ($username === '' || $email === '' || $phone === '' || $password === '' || $confirmPassword === '') {
         $error = 'Please fill in all fields.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Please enter a valid email address.';
+    } elseif (!preg_match('/^\+?[0-9]{7,15}$/', $phone)) {
+        $error = 'Please enter a valid phone number.';
     } elseif ($password !== $confirmPassword) {
         $error = 'Passwords do not match.';
     } elseif (strlen($password) < 6) {
         $error = 'Password must be at least 6 characters.';
     } else {
-        // Check if username exists
-        $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ?');
-        $stmt->execute([$username]);
+        // Check if username or email or phone exists
+        $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ? OR email = ? OR phone = ?');
+        $stmt->execute([$username, $email, $phone]);
         if ($stmt->fetch()) {
-            $error = 'Username already exists.';
+            $error = 'Username, email, or phone number already exists.';
         } else {
             // Insert new user
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)');
-            if ($stmt->execute([$username, $passwordHash])) {
+            $stmt = $pdo->prepare('INSERT INTO users (username, email, phone, password_hash) VALUES (?, ?, ?, ?)');
+            if ($stmt->execute([$username, $email, $phone, $passwordHash])) {
                 $success = 'Account created successfully. You can now <a href="login.php">login</a>.';
             } else {
                 $error = 'Failed to create account. Please try again.';
@@ -124,6 +130,10 @@ button:hover {
     <form method="post" action="signup.php" novalidate>
         <label for="username">Username</label>
         <input type="text" id="username" name="username" required autofocus />
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email" required />
+        <label for="phone">Phone Number</label>
+        <input type="text" id="phone" name="phone" required />
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required />
         <label for="confirm_password">Confirm Password</label>

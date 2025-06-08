@@ -32,6 +32,9 @@
           <a class="nav-link" href="sms_send.php">Send SMS</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="change_password.php">Change Password</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="logout.php">Logout</a>
         </li>
       </ul>

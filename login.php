@@ -103,6 +103,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   function togglePassword() {
     const passwordInput = document.getElementById('password');
     const toggleBtn = document.getElementById('togglePassword');
+    if (!passwordInput || !toggleBtn) {
+      console.error('Password input or toggle button not found');
+      return;
+    }
     if (passwordInput.type === 'password') {
       passwordInput.type = 'text';
       toggleBtn.textContent = 'Hide';

@@ -37,11 +37,21 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end bg-dark text-light" aria-labelledby="profileDropdown" style="min-width: 200px;">
             <li class="dropdown-item-text" style="color: #e0e7ff;">
-              <?php if (isset($_SESSION['username'])): ?>
-                <strong>Username:</strong> <?= htmlspecialchars($_SESSION['username']) ?>
-              <?php else: ?>
-                Username not available.
-              <?php endif; ?>
+              <?php
+              if (isset($_SESSION['user_id'])) {
+                  require_once __DIR__ . '/config.php';
+                  $stmt = $pdo->prepare('SELECT username FROM users WHERE id = ?');
+                  $stmt->execute([$_SESSION['user_id']]);
+                  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                  if ($user && !empty($user['username'])) {
+                      echo '<strong>Username:</strong> ' . htmlspecialchars($user['username']);
+                  } else {
+                      echo 'Username not available.';
+                  }
+              } else {
+                  echo 'Username not available.';
+              }
+              ?>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>

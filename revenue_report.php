@@ -42,16 +42,22 @@ if ($vehicle_type_filter && $vehicle_type_filter !== 'All') {
 
 $whereClause = $where ? "WHERE $where" : "";
 
+// Add tenant_id filter to WHERE clause for multi-tenant data isolation
+$tenantFilter = "v.tenant_id = ?";
+$params[] = $_SESSION['tenant_id'];
+
+if ($whereClause) {
+    $whereClause .= " AND $tenantFilter";
+} else {
+    $whereClause = "WHERE $tenantFilter";
+}
+
 // Add date range filter to WHERE clause
 $dateFilter = "pe.entry_time BETWEEN ? AND ?";
 $params[] = $start_date . ' 00:00:00';
 $params[] = $end_date . ' 23:59:59';
 
-if ($whereClause) {
-    $whereClause .= " AND $dateFilter";
-} else {
-    $whereClause = "WHERE $dateFilter";
-}
+$whereClause .= " AND $dateFilter";
 
 // Get total count of distinct dates for pagination
 $countStmt = $pdo->prepare("

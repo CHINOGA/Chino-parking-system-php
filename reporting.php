@@ -102,11 +102,10 @@ if (isset($_GET['action']) && ($_GET['action'] === 'filter' || $_GET['action'] =
             CONVERT_TZ(pe.entry_time, '+00:00', '+03:00') AS entry_time
             FROM parking_entries pe
             JOIN vehicles v ON pe.vehicle_id = v.id
-            WHERE pe.exit_time IS NULL AND v.tenant_id = ?
+            WHERE pe.exit_time IS NULL
             " . ($where ? "AND $where" : "") . "
             ORDER BY pe.entry_time DESC
         ");
-        $params[] = $_SESSION['tenant_id'];
         $stmt->execute($params);
         $parked = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

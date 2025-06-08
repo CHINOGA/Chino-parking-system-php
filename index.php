@@ -231,7 +231,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="#" class="navbar-brand">Chno Park</a>
+            <a href="#" class="navbar-brand">Chino Park</a>
             <div class="hamburger" id="hamburger">
                 <div></div>
                 <div></div>

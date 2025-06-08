@@ -34,20 +34,20 @@ if (isset($_GET['action']) && ($_GET['action'] === 'filter' || $_GET['action'] =
     $params = [];
     $where = '';
 
-// Add tenant_id filter for multi-tenant data isolation
-if (isset($_SESSION['tenant_id'])) {
-    $tenantFilter = "v.tenant_id = ?";
-    $params[] = $_SESSION['tenant_id'];
+    // Add tenant_id filter for multi-tenant data isolation
+    if (isset($_SESSION['tenant_id'])) {
+        $tenantFilter = "v.tenant_id = ?";
+        $params[] = $_SESSION['tenant_id'];
 
-    if ($where) {
-        $where .= " AND $tenantFilter";
+        if ($where) {
+            $where .= " AND $tenantFilter";
+        } else {
+            $where = $tenantFilter;
+        }
     } else {
-        $where = $tenantFilter;
+        // tenant_id not set in session, handle error or fallback
+        // For now, do not add tenant filter
     }
-} else {
-    // tenant_id not set in session, handle error or fallback
-    // For now, do not add tenant filter
-}
 
     if ($vehicle_type_filter && $vehicle_type_filter !== 'All') {
         $where .= ($where ? ' AND ' : '') . 'v.vehicle_type = ?';
@@ -104,31 +104,31 @@ if (isset($_SESSION['tenant_id'])) {
     }
 
     // Parked vehicles (no exit_time)
-        $stmt = $pdo->prepare("
-            SELECT v.registration_number, v.vehicle_type, v.driver_name, v.phone_number, 
-            CONVERT_TZ(pe.entry_time, '+00:00', '+03:00') AS entry_time
-            FROM parking_entries pe
-            JOIN vehicles v ON pe.vehicle_id = v.id
-            WHERE pe.exit_time IS NULL
-            " . ($where ? "AND $where" : "") . "
-            ORDER BY pe.entry_time DESC
-        ");
-        $stmt->execute($params);
-        $parked = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare("
+        SELECT v.registration_number, v.vehicle_type, v.driver_name, v.phone_number, 
+        CONVERT_TZ(pe.entry_time, '+00:00', '+03:00') AS entry_time
+        FROM parking_entries pe
+        JOIN vehicles v ON pe.vehicle_id = v.id
+        WHERE pe.exit_time IS NULL
+        " . ($where ? "AND $where" : "") . "
+        ORDER BY pe.entry_time DESC
+    ");
+    $stmt->execute($params);
+    $parked = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Exited vehicles with pagination support and stay duration calculation
     $limit = 10;
     $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
 
-        $sqlExited = "
-            SELECT v.registration_number, v.vehicle_type, v.driver_name, v.phone_number, 
-            CONVERT_TZ(pe.entry_time, '+00:00', '+03:00') AS entry_time, 
-            CONVERT_TZ(pe.exit_time, '+00:00', '+03:00') AS exit_time,
-            TIMESTAMPDIFF(MINUTE, pe.entry_time, pe.exit_time) AS stay_duration_minutes
-            FROM parking_entries pe
-            JOIN vehicles v ON pe.vehicle_id = v.id
-            WHERE pe.exit_time IS NOT NULL AND v.tenant_id = ?
-        ";
+    $sqlExited = "
+        SELECT v.registration_number, v.vehicle_type, v.driver_name, v.phone_number, 
+        CONVERT_TZ(pe.entry_time, '+00:00', '+03:00') AS entry_time, 
+        CONVERT_TZ(pe.exit_time, '+00:00', '+03:00') AS exit_time,
+        TIMESTAMPDIFF(MINUTE, pe.entry_time, pe.exit_time) AS stay_duration_minutes
+        FROM parking_entries pe
+        JOIN vehicles v ON pe.vehicle_id = v.id
+        WHERE pe.exit_time IS NOT NULL
+    ";
 
     if ($where) {
         $sqlExited .= " AND $where ";
@@ -136,7 +136,6 @@ if (isset($_SESSION['tenant_id'])) {
 
     $sqlExited .= " ORDER BY pe.exit_time DESC LIMIT $limit OFFSET $offset";
 
-    $params[] = $_SESSION['tenant_id'];
     $stmt = $pdo->prepare($sqlExited);
     $stmt->execute($params);
     $exited = $stmt->fetchAll(PDO::FETCH_ASSOC);

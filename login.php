@@ -103,20 +103,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   function togglePassword() {
     const passwordInput = document.getElementById('password');
     const toggleBtn = document.getElementById('togglePassword');
-    if (!passwordInput || !toggleBtn) {
-      console.error('Password input or toggle button not found');
+    const eyeIcon = document.getElementById('eyeIcon');
+    if (!passwordInput || !toggleBtn || !eyeIcon) {
+      console.error('Password input, toggle button, or eye icon not found');
       return;
     }
     if (passwordInput.type === 'password') {
       passwordInput.type = 'text';
-      toggleBtn.textContent = 'Hide';
       toggleBtn.setAttribute('aria-label', 'Hide password');
       toggleBtn.setAttribute('aria-pressed', 'true');
+      eyeIcon.innerHTML = '<path d="M13.359 11.238a6.5 6.5 0 0 0 1.292-3.238 6.5 6.5 0 0 0-11.292-3.238l1.415 1.415a3 3 0 0 1 4.243 4.243l1.415 1.415z"/><path d="M3.646 3.646a.5.5 0 0 1 .708 0l8 8a.5.5 0 0 1-.708.708l-8-8a.5.5 0 0 1 0-.708z"/>';
     } else {
       passwordInput.type = 'password';
-      toggleBtn.textContent = 'Show';
       toggleBtn.setAttribute('aria-label', 'Show password');
       toggleBtn.setAttribute('aria-pressed', 'false');
+      eyeIcon.innerHTML = '<path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/><path d="M8 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>';
     }
   }
 
@@ -289,9 +290,14 @@ button:hover {
         <label for="username">Username</label>
         <input type="text" id="username" name="username" required autofocus aria-required="true" aria-describedby="usernameHelp" />
         <label for="password">Password</label>
-        <div class="form-group">
+        <div class="form-group position-relative">
           <input type="password" id="password" name="password" required aria-required="true" aria-describedby="passwordHelp" />
-          <button type="button" id="togglePassword" class="show-password-btn" aria-label="Show password" onclick="togglePassword()">Show</button>
+          <button type="button" id="togglePassword" class="btn btn-outline-light btn-sm position-absolute top-50 end-0 translate-middle-y me-2" aria-label="Show password" onclick="togglePassword()" style="border:none; background:none; padding:0;">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+              <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
+              <path d="M8 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+            </svg>
+          </button>
         </div>
         <a href="#" class="forgot-password" tabindex="0">Forgot password?</a>
         <button type="submit" id="loginButton">Login</button>

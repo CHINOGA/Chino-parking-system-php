@@ -189,6 +189,9 @@ body {
   border-radius: 0.5rem;
   padding: 2rem;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 h2 {
   text-align: center;
@@ -202,6 +205,9 @@ h2 {
   margin-bottom: 1rem;
   font-weight: 700;
   text-shadow: 0 0 3px rgba(0,0,0,0.7);
+}
+form {
+  width: 100%;
 }
 form label {
   display: block;
@@ -290,6 +296,9 @@ button:hover {
         <a href="#" class="forgot-password" tabindex="0">Forgot password?</a>
         <button type="submit" id="loginButton">Login</button>
     </form>
+    <p style="margin-top: 1rem; text-align: center; color: #a5b4fc;">
+      Don't have an account? <a href="signup.php" style="color: #e0e7ff; text-decoration: underline;">Sign up</a>
+    </p>
 </div>
 </body>
 </html>

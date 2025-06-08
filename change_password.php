@@ -35,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
             $stmt->execute([$newHash, $_SESSION['user_id']]);
             $success = 'Password changed successfully.';
+            // Redirect to login page after 3 seconds
+            header("refresh:3;url=login.php");
         }
     }
 }

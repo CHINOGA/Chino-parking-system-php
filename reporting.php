@@ -1,7 +1,7 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(0);
 
 session_start();
 if (!isset($_SESSION['user_id'])) {
@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once 'config.php';
+
 
 // Initialize $start_date and $end_date to avoid undefined variable notices
 $start_date = '';

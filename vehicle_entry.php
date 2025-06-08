@@ -33,26 +33,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             // Check if vehicle exists
-            $stmt = $pdo->prepare('SELECT id FROM vehicles WHERE registration_number = ? AND tenant_id = ?');
-            $stmt->execute([$registration_number, $_SESSION['tenant_id']]);
+            $stmt = $pdo->prepare('SELECT id FROM vehicles WHERE registration_number = ?');
+            $stmt->execute([$registration_number]);
             $vehicle = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($vehicle) {
                 $vehicle_id = $vehicle['id'];
                 // Check if vehicle is already parked (no exit_time)
-                $stmtCheck = $pdo->prepare('SELECT COUNT(*) FROM parking_entries WHERE vehicle_id = ? AND exit_time IS NULL AND tenant_id = ?');
-                $stmtCheck->execute([$vehicle_id, $_SESSION['tenant_id']]);
+                $stmtCheck = $pdo->prepare('SELECT COUNT(*) FROM parking_entries WHERE vehicle_id = ? AND exit_time IS NULL');
+                $stmtCheck->execute([$vehicle_id]);
                 $count = $stmtCheck->fetchColumn();
                 if ($count > 0) {
                     $error = 'Vehicle is already parked and has not exited.';
                 } else {
                     // Update vehicle info
-                    $stmt = $pdo->prepare('UPDATE vehicles SET vehicle_type = ?, driver_name = ?, phone_number = ? WHERE id = ? AND tenant_id = ?');
-                    $stmt->execute([$vehicle_type, $driver_name, $phone_number, $vehicle_id, $_SESSION['tenant_id']]);
+                    $stmt = $pdo->prepare('UPDATE vehicles SET vehicle_type = ?, driver_name = ?, phone_number = ? WHERE id = ?');
+                    $stmt->execute([$vehicle_type, $driver_name, $phone_number, $vehicle_id]);
 
                     // Insert parking entry
-                    $stmt = $pdo->prepare('INSERT INTO parking_entries (vehicle_id, tenant_id) VALUES (?, ?)');
-                    $stmt->execute([$vehicle_id, $_SESSION['tenant_id']]);
+                    $stmt = $pdo->prepare('INSERT INTO parking_entries (vehicle_id) VALUES (?)');
+                    $stmt->execute([$vehicle_id]);
 
                     // Send entry SMS
                     $entry_time = new DateTime();
@@ -75,13 +75,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } else {
                 // Insert new vehicle
-                $stmt = $pdo->prepare('INSERT INTO vehicles (registration_number, vehicle_type, driver_name, phone_number, tenant_id) VALUES (?, ?, ?, ?, ?)');
-                $stmt->execute([$registration_number, $vehicle_type, $driver_name, $phone_number, $_SESSION['tenant_id']]);
+                $stmt = $pdo->prepare('INSERT INTO vehicles (registration_number, vehicle_type, driver_name, phone_number) VALUES (?, ?, ?, ?)');
+                $stmt->execute([$registration_number, $vehicle_type, $driver_name, $phone_number]);
                 $vehicle_id = $pdo->lastInsertId();
 
                 // Insert parking entry
-                $stmt = $pdo->prepare('INSERT INTO parking_entries (vehicle_id, tenant_id) VALUES (?, ?)');
-                $stmt->execute([$vehicle_id, $_SESSION['tenant_id']]);
+                $stmt = $pdo->prepare('INSERT INTO parking_entries (vehicle_id) VALUES (?)');
+                $stmt->execute([$vehicle_id]);
 
                 // Send entry SMS
                 $message = "Vehicle $registration_number has entered the parking lot. Thank you for using Chino Parking System.";

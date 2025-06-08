@@ -45,7 +45,7 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-              <a class="dropdown-item text-white" href="change_password.php" style="color: #e0e7ff;">Change Password</a>
+              <a class="dropdown-item text-white" href="change_password.php" style="color: #e0e7ff;" onmouseover="this.style.color='black';" onmouseout="this.style.color='#e0e7ff';">Change Password</a>
             </li>
             <li>
               <form method="post" action="logout.php" onsubmit="return confirm('Are you sure you want to logout?');" class="m-0 p-0">

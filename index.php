@@ -190,6 +190,7 @@
                 <a href="#hours-pricing">Hours & Pricing</a>
                 <a href="#faq">FAQ</a>
                 <a href="#contact">Contact</a>
+                <a href="login.php" style="font-weight: 700; color: #2563eb; margin-left: 1.5rem;">Login</a>
             </nav>
         </header>
         <section class="hero">

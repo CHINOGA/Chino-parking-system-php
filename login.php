@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user_id'] = $user['id'];
-            header('Location: index.php');
+            header('Location: vehicle_entry.php');
             exit;
         } else {
             $error = 'Invalid username or password.';
@@ -124,6 +124,10 @@ button:hover {
         </div>
         <button type="submit">Login</button>
     </form>
+    <p style="margin-top: 1rem; text-align: center;">
+        Don't have an account? <a href="signup.php" style="color:#a5b4fc;">Sign Up</a><br />
+        <a href="forgot_password.php" style="color:#a5b4fc;">Forgot Password?</a>
+    </p>
 </div>
 <script>
 document.getElementById('togglePassword').addEventListener('click', function () {

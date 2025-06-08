@@ -36,15 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Get the inserted user ID
                 $userId = $pdo->lastInsertId();
 
-                // Generate a unique database name for the user
-                $userDatabase = 'user_db_' . $userId;
+                // Remove user-specific database creation due to permission issues
+                // $userDatabase = 'user_db_' . $userId;
 
-                // Create the new database for the user
-                $pdo->exec("CREATE DATABASE IF NOT EXISTS `$userDatabase` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                // $pdo->exec("CREATE DATABASE IF NOT EXISTS `$userDatabase` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 
-                // Update the user's database name in the users table
-                $updateStmt = $pdo->prepare('UPDATE users SET user_database = ? WHERE id = ?');
-                $updateStmt->execute([$userDatabase, $userId]);
+                // $updateStmt = $pdo->prepare('UPDATE users SET user_database = ? WHERE id = ?');
+                // $updateStmt->execute([$userDatabase, $userId]);
 
                 $success = 'Account created successfully. You can now <a href="login.php">login</a>.';
             } else {

@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 body {
   background: linear-gradient(to right, #2563eb, #4f46e5);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: white;
+  color: #f0f0f0;
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -157,7 +157,7 @@ body {
 }
 .topbar {
   background-color: #1e40af;
-  color: white;
+  color: #e0e7ff;
   font-weight: 700;
   font-size: 1.25rem;
   text-align: center;
@@ -170,35 +170,38 @@ body {
 .container {
   max-width: 400px;
   margin: 4rem auto 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
   border-radius: 0.5rem;
   padding: 2rem;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
 }
 h2 {
   text-align: center;
   font-weight: 700;
   font-size: 2rem;
   margin-bottom: 1.5rem;
+  color: #e0e7ff;
 }
 .error {
   color: #f87171;
   margin-bottom: 1rem;
-  font-weight: 600;
+  font-weight: 700;
+  text-shadow: 0 0 3px rgba(0,0,0,0.7);
 }
 form label {
   display: block;
   margin-bottom: 0.25rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: #e0e7ff;
 }
 input[type="text"],
 input[type="password"] {
   width: 100%;
   padding: 0.75rem;
   border-radius: 0.375rem;
-  border: 1px solid #d1d5db;
-  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #a5b4fc;
+  background-color: rgba(255, 255, 255, 0.95);
   color: #111827;
   margin-bottom: 1rem;
   font-size: 1rem;
@@ -208,13 +211,13 @@ input[type="password"] {
 }
 input[type="text"]:focus,
 input[type="password"]:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
 }
 button {
   width: 100%;
-  background-color: #2563eb;
-  color: white;
+  background-color: #4f46e5;
+  color: #e0e7ff;
   font-weight: 700;
   padding: 0.75rem;
   border: none;
@@ -224,7 +227,7 @@ button {
   transition: background-color 0.3s ease;
 }
 button:hover {
-  background-color: #1e40af;
+  background-color: #3730a3;
 }
 .show-password-btn {
   position: absolute;
@@ -232,7 +235,7 @@ button:hover {
   top: 2.5rem;
   background: none;
   border: none;
-  color: #2563eb;
+  color: #4f46e5;
   font-weight: 700;
   cursor: pointer;
   user-select: none;
@@ -245,7 +248,7 @@ button:hover {
   margin-top: 0.5rem;
   text-align: right;
   font-size: 0.875rem;
-  color: #93c5fd;
+  color: #a5b4fc;
   text-decoration: none;
 }
 .forgot-password:hover {

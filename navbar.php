@@ -36,7 +36,7 @@
             Profile
           </a>
           <ul class="dropdown-menu dropdown-menu-end bg-dark text-light" aria-labelledby="profileDropdown" style="min-width: 200px;">
-            <li class="dropdown-item-text">
+            <li class="dropdown-item-text" style="color: #e0e7ff;">
               <?php if (isset($_SESSION['username'])): ?>
                 <strong>Username:</strong> <?= htmlspecialchars($_SESSION['username']) ?>
               <?php else: ?>

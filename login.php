@@ -113,11 +113,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       toggleBtn.setAttribute('aria-label', 'Hide password');
       toggleBtn.setAttribute('aria-pressed', 'true');
       eyeIcon.innerHTML = '<path d="M13.359 11.238a6.5 6.5 0 0 0 1.292-3.238 6.5 6.5 0 0 0-11.292-3.238l1.415 1.415a3 3 0 0 1 4.243 4.243l1.415 1.415z"/><path d="M3.646 3.646a.5.5 0 0 1 .708 0l8 8a.5.5 0 0 1-.708.708l-8-8a.5.5 0 0 1 0-.708z"/>';
+      toggleBtn.classList.add('active');
     } else {
       passwordInput.type = 'password';
       toggleBtn.setAttribute('aria-label', 'Show password');
       toggleBtn.setAttribute('aria-pressed', 'false');
       eyeIcon.innerHTML = '<path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/><path d="M8 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>';
+      toggleBtn.classList.remove('active');
     }
   }
 

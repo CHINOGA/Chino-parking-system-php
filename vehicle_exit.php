@@ -26,11 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 SELECT pe.id AS entry_id, pe.entry_time, v.phone_number, v.vehicle_type, v.driver_name
                 FROM parking_entries pe
                 JOIN vehicles v ON pe.vehicle_id = v.id
-                WHERE v.registration_number = ? AND pe.exit_time IS NULL
+                WHERE v.registration_number = ? AND pe.exit_time IS NULL AND v.tenant_id = ?
                 ORDER BY pe.entry_time DESC
                 LIMIT 1
             ');
-            $stmt->execute([$registration_number]);
+            $stmt->execute([$registration_number, $_SESSION['tenant_id']]);
             $entry = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$entry) {
@@ -45,12 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $total_fee = $days * $fee_per_day;
 
                 // Update exit_time to current timestamp
-                $stmt = $pdo->prepare('UPDATE parking_entries SET exit_time = NOW() WHERE id = ?');
-                $stmt->execute([$entry['entry_id']]);
+                $stmt = $pdo->prepare('UPDATE parking_entries SET exit_time = NOW() WHERE id = ? AND tenant_id = ?');
+                $stmt->execute([$entry['entry_id'], $_SESSION['tenant_id']]);
 
                 // Insert revenue record
-                $stmt = $pdo->prepare('INSERT INTO revenue (parking_entry_id, amount) VALUES (?, ?)');
-                $stmt->execute([$entry['entry_id'], $total_fee]);
+                $stmt = $pdo->prepare('INSERT INTO revenue (parking_entry_id, amount, tenant_id) VALUES (?, ?, ?)');
+                $stmt->execute([$entry['entry_id'], $total_fee, $_SESSION['tenant_id']]);
 
                 // Format phone number to international format 2557XXXXXXX
                 $phone_number = $entry['phone_number'];

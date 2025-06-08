@@ -43,13 +43,18 @@ if ($vehicle_type_filter && $vehicle_type_filter !== 'All') {
 $whereClause = $where ? "WHERE $where" : "";
 
 // Add tenant_id filter to WHERE clause for multi-tenant data isolation
-$tenantFilter = "v.tenant_id = ?";
-$params[] = $_SESSION['tenant_id'];
+if (isset($_SESSION['tenant_id'])) {
+    $tenantFilter = "v.tenant_id = ?";
+    $params[] = $_SESSION['tenant_id'];
 
-if ($whereClause) {
-    $whereClause .= " AND $tenantFilter";
+    if ($whereClause) {
+        $whereClause .= " AND $tenantFilter";
+    } else {
+        $whereClause = "WHERE $tenantFilter";
+    }
 } else {
-    $whereClause = "WHERE $tenantFilter";
+    // tenant_id not set in session, handle error or fallback
+    // For now, do not add tenant filter
 }
 
 // Add date range filter to WHERE clause

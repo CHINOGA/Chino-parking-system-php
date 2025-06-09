@@ -19,11 +19,25 @@ define('NEXTSMS_USERNAME', 'abelchinoga');
 define('NEXTSMS_PASSWORD', 'Abelyohana@8');
 define('NEXTSMS_SENDER_ID', 'CHINOTRACK');
 
+require_once 'TenantConnectionManager.php';
+
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
+    // Initialize tenant connection manager
+    $tenantConnectionManager = new TenantConnectionManager();
+
+    // Example: get tenant ID from session or request context
+    session_start();
+    if (!isset($_SESSION['tenant_id'])) {
+        die("Tenant ID not set in session.");
+    }
+    $tenantId = $_SESSION['tenant_id'];
+
+    // Get tenant-specific PDO connection
+    $pdo = $tenantConnectionManager->getTenantConnection($tenantId);
+
     // Set error mode to exception
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
+} catch (Exception $e) {
     die("Database connection failed: " . $e->getMessage());
 }
 ?>

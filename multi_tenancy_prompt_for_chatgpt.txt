@@ -1,0 +1,27 @@
+I am working on a SaaS parking system implemented in PHP with a MySQL database. The system currently has a basic multi-tenancy setup with the following characteristics:
+
+- A tenants table that stores tenant information (id, name, created_at).
+- Key tables such as users, vehicles, parking_entries, and revenue have a tenant_id foreign key referencing the tenants table.
+- The users table also has a "user_database" column, which may be used for database-level multi-tenancy or user-specific database identification.
+- The application uses a single database connection configured in a config.php file with fixed credentials and database name.
+- Multi-tenancy is currently enforced at the application level by filtering data based on tenant_id columns.
+
+I want to improve the multi-tenancy logic in this system to ensure better data isolation, security, scalability, and maintainability. Could you provide guidance on:
+
+1. Best practices for implementing multi-tenancy in a PHP SaaS application with MySQL.
+2. How to handle database connections and queries efficiently for multi-tenancy.
+3. Whether to use a single database with tenant_id columns, separate databases per tenant, or a hybrid approach.
+4. How to manage user authentication and authorization in a multi-tenant context.
+5. Any recommended design patterns, libraries, or frameworks that can help.
+6. How to migrate existing data and schema to a more robust multi-tenancy model if needed.
+
+Please provide example code snippets or architectural suggestions where applicable.
+
+Additionally, here is some context about the current database schema and connection setup:
+
+- The tenants table is created with id, name, and created_at columns.
+- The users, vehicles, parking_entries, and revenue tables have tenant_id columns with foreign key constraints to tenants.
+- The users table has an additional user_database column.
+- The config.php file contains a single fixed database connection.
+
+Please help me improve this multi-tenancy implementation with a focus on security, scalability, and maintainability.

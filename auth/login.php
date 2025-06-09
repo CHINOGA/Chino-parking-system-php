@@ -12,20 +12,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($tenantCode === '' || $username === '' || $password === '') {
         $error = 'Please fill in all fields.';
     } else {
-        $stmt = $pdo->prepare("SELECT t.id AS tenant_id, u.id AS user_id, u.username, u.password_hash 
-                               FROM tenants t
-                               JOIN users u ON u.tenant_id = t.id
-                               WHERE t.name = ? AND u.username = ?");
-        $stmt->execute([$tenantCode, $username]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Verify tenant code exists and get tenant_id
+        $stmt = $pdo->prepare("SELECT id FROM tenants WHERE name = ?");
+        $stmt->execute([$tenantCode]);
+        $tenant = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password_hash'])) {
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['tenant_id'] = $user['tenant_id'];
-            header("Location: ../dashboard.php");
-            exit;
+        if (!$tenant) {
+            $error = 'Invalid tenant code.';
         } else {
-            $error = 'Invalid credentials.';
+            $tenantId = $tenant['id'];
+
+            // Verify user exists for tenant and check password
+            $stmt = $pdo->prepare("SELECT id, username, password_hash FROM users WHERE tenant_id = ? AND username = ?");
+            $stmt->execute([$tenantId, $username]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['tenant_id'] = $tenantId;
+                header("Location: ../dashboard.php");
+                exit;
+            } else {
+                $error = 'Invalid credentials.';
+            }
         }
     }
 }

@@ -51,20 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare('INSERT INTO users (tenant_id, username, email, phone, password_hash) VALUES (?, ?, ?, ?, ?)');
                 if ($stmt->execute([$tenantId, $username, $email, $phone, $passwordHash])) {
-                    // Send SMS with username and tenant code using NextSMS API
-                    $message = "Welcome $username! Your tenant code is $tenantCode. Use it to login.";
-
-                    $nextSmsUsername = NEXTSMS_USERNAME;
-                    $nextSmsPassword = NEXTSMS_PASSWORD;
-                    $nextSmsSenderId = NEXTSMS_SENDER_ID;
-
-                    $smsService = new SmsService();
-
-                    if ($smsService->sendSms($phone, $message, $nextSmsUsername, $nextSmsPassword, $nextSmsSenderId)) {
-                        $success = 'Account created successfully. You will receive an SMS with your tenant code. You can now <a href="../login.php">login</a>.';
-                    } else {
-                        $error = 'Failed to send SMS with tenant code. Please try again.';
-                    }
+                    // SMS sending removed for cleaner auth flow
+                    $success = 'Account created successfully. You can now <a href="../login.php">login</a>.';
                 } else {
                     $error = 'Failed to create account. Please try again.';
                 }

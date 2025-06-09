@@ -36,7 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $subject = 'Password Reset OTP';
                 $message = "Hello " . htmlspecialchars($user['username']) . ",\n\n";
                 $message .= "Your password reset OTP is: $otp\n";
-                $message .= "Your tenant code is: " . htmlspecialchars(getTenantCode($user['tenant_id'], $pdo)) . "\n\n";
+                $tenantId = $user['tenant_id'] ?? null;
+                $tenantCode = $tenantId ? htmlspecialchars(getTenantCode($tenantId, $pdo)) : '';
+                $message .= "Your tenant code is: " . $tenantCode . "\n\n";
                 $message .= "This OTP will expire in 10 minutes.\n\n";
                 $message .= "If you did not request a password reset, please ignore this email.\n\n";
                 $message .= "Regards,\nChino Parking System";
@@ -52,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } else {
                 // Send OTP via SMS with username and tenant code
-                $tenantCode = getTenantCode($user['tenant_id'], $pdo);
+                $tenantId = $user['tenant_id'] ?? null;
+                $tenantCode = $tenantId ? getTenantCode($tenantId, $pdo) : '';
                 $smsMessage = "Hello " . $user['username'] . "! Your password reset OTP is: $otp. Tenant code: $tenantCode. It expires in 10 minutes.";
                 if ($smsService->sendSms($user['phone'], $smsMessage)) {
                     $success = 'A password reset OTP has been sent to your phone number.';

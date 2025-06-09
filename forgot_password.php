@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter your email or phone number.';
     } else {
         // Find user by email or phone
-        $stmt = $pdo->prepare('SELECT id, username, email, phone FROM users WHERE email = ? OR phone = ?');
+        $stmt = $pdo->prepare('SELECT id, username, email, phone, tenant_id FROM users WHERE email = ? OR phone = ?');
         $stmt->execute([$emailOrPhone, $emailOrPhone]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -32,10 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $smsService = new SmsService();
 
             if (filter_var($emailOrPhone, FILTER_VALIDATE_EMAIL)) {
-                // Send reset email with OTP
+                // Send reset email with OTP, username, tenant code
                 $subject = 'Password Reset OTP';
                 $message = "Hello " . htmlspecialchars($user['username']) . ",\n\n";
-                $message .= "Your password reset OTP is: $otp\n\n";
+                $message .= "Your password reset OTP is: $otp\n";
+                $message .= "Your tenant code is: " . htmlspecialchars(getTenantCode($user['tenant_id'], $pdo)) . "\n\n";
                 $message .= "This OTP will expire in 10 minutes.\n\n";
                 $message .= "If you did not request a password reset, please ignore this email.\n\n";
                 $message .= "Regards,\nChino Parking System";
@@ -50,8 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = 'Failed to send password reset email. Please try again later.';
                 }
             } else {
-                // Send OTP via SMS
-                if ($smsService->sendSms($user['phone'], "Your password reset OTP is: $otp. It expires in 10 minutes.")) {
+                // Send OTP via SMS with username and tenant code
+                $tenantCode = getTenantCode($user['tenant_id'], $pdo);
+                $smsMessage = "Hello " . $user['username'] . "! Your password reset OTP is: $otp. Tenant code: $tenantCode. It expires in 10 minutes.";
+                if ($smsService->sendSms($user['phone'], $smsMessage)) {
                     $success = 'A password reset OTP has been sent to your phone number.';
                 } else {
                     $error = 'Failed to send password reset SMS. Please try again later.';
@@ -59,6 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+}
+
+function getTenantCode($tenantId, $pdo) {
+    $stmt = $pdo->prepare('SELECT name FROM tenants WHERE id = ?');
+    $stmt->execute([$tenantId]);
+    $tenant = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $tenant ? $tenant['name'] : '';
 }
 ?>
 

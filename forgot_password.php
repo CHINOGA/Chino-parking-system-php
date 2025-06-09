@@ -56,11 +56,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $error = 'Failed to send password reset email. Please try again later.';
                     }
                 } else {
-                    // Send OTP via SMS with username and tenant code
+                    // Send OTP via SMS with username and tenant code using NextSMS API
                     $tenantId = $user['tenant_id'] ?? null;
                     $tenantCode = $tenantId ? getTenantCode($tenantId, $pdo) : '';
                     $smsMessage = "Hello " . $user['username'] . "! Your password reset OTP is: $otp. Tenant code: $tenantCode. It expires in 10 minutes.";
-                    if ($smsService->sendSms($user['phone'], $smsMessage)) {
+
+                    // Use NextSMS API credentials defined in config.php
+                    $nextSmsUsername = NEXTSMS_USERNAME;
+                    $nextSmsPassword = NEXTSMS_PASSWORD;
+                    $nextSmsSenderId = NEXTSMS_SENDER_ID;
+
+                    $smsService = new SmsService();
+
+                    if ($smsService->sendSms($user['phone'], $smsMessage, $nextSmsUsername, $nextSmsPassword, $nextSmsSenderId)) {
                         $success = 'A password reset OTP has been sent to your phone number.';
                         $showForm = true;
                     } else {

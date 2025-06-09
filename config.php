@@ -26,7 +26,9 @@ try {
     $tenantConnectionManager = new TenantConnectionManager();
 
     // Example: get tenant ID from session or request context
-    session_start();
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
     if (!isset($_SESSION['tenant_id'])) {
         die("Tenant ID not set in session.");
     }

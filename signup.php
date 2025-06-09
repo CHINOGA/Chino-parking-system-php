@@ -1,9 +1,14 @@
 <?php
 session_start();
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/sms_send.php';
 
 $error = '';
 $success = '';
+
+function generateTenantCode() {
+    return strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
@@ -29,24 +34,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->fetch()) {
             $error = 'Username, email, or phone number already exists.';
         } else {
-            // Insert new user
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare('INSERT INTO users (username, email, phone, password_hash) VALUES (?, ?, ?, ?)');
-            if ($stmt->execute([$username, $email, $phone, $passwordHash])) {
-                // Get the inserted user ID
-                $userId = $pdo->lastInsertId();
+            // Generate tenant code and insert tenant
+            $tenantCode = generateTenantCode();
 
-                // Remove user-specific database creation due to permission issues
-                // $userDatabase = 'user_db_' . $userId;
-
-                // $pdo->exec("CREATE DATABASE IF NOT EXISTS `$userDatabase` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-
-                // $updateStmt = $pdo->prepare('UPDATE users SET user_database = ? WHERE id = ?');
-                // $updateStmt->execute([$userDatabase, $userId]);
-
-                $success = 'Account created successfully. You can now <a href="login.php">login</a>.';
+            $tenantStmt = $pdo->prepare('INSERT INTO tenants (name) VALUES (?)');
+            if (!$tenantStmt->execute([$tenantCode])) {
+                $error = 'Failed to create tenant. Please try again.';
             } else {
-                $error = 'Failed to create account. Please try again.';
+                $tenantId = $pdo->lastInsertId();
+
+                // Insert new user with tenant_id
+                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare('INSERT INTO users (tenant_id, username, email, phone, password_hash) VALUES (?, ?, ?, ?, ?)');
+                if ($stmt->execute([$tenantId, $username, $email, $phone, $passwordHash])) {
+                    // Send SMS with username and tenant code
+                    $message = "Welcome $username! Your tenant code is $tenantCode. Use it to login.";
+                    send_sms($phone, $message);
+
+                    $success = 'Account created successfully. You will receive an SMS with your tenant code. You can now <a href="login.php">login</a>.';
+                } else {
+                    $error = 'Failed to create account. Please try again.';
+                }
             }
         }
     }

@@ -11,12 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($username === '' || $password === '') {
         $error = 'Please fill in all fields.';
     } else {
-        $stmt = $pdo->prepare('SELECT id, password_hash FROM users WHERE username = ?');
+        $stmt = $pdo->prepare('SELECT id, tenant_id, password_hash FROM users WHERE username = ?');
         $stmt->execute([$username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['tenant_id'] = $user['tenant_id'];
             header('Location: vehicle_entry.php');
             exit;
         } else {

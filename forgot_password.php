@@ -64,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $success = 'A password reset OTP has been sent to your phone number.';
                         $showForm = true;
                     } else {
+                        error_log('Failed to send password reset SMS to ' . $user['phone']);
                         $error = 'Failed to send password reset SMS. Please try again later.';
                     }
                 }

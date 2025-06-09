@@ -29,16 +29,30 @@ try {
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
-    if (!isset($_SESSION['tenant_id'])) {
-        die("Tenant ID not set in session.");
+
+    // Allow public pages without tenant_id in session
+    $publicPages = ['login.php', 'signup.php', 'forgot_password.php'];
+    $currentPage = basename($_SERVER['PHP_SELF']);
+    if (!in_array($currentPage, $publicPages)) {
+        if (!isset($_SESSION['tenant_id'])) {
+            die("Tenant ID not set in session.");
+        }
+        $tenantId = $_SESSION['tenant_id'];
+
+        // Get tenant-specific PDO connection
+        $pdo = $tenantConnectionManager->getTenantConnection($tenantId);
+
+        // Set error mode to exception
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } else {
+        // For public pages, use default connection
+        $host = 'localhost';
+        $dbname = 'chinotra_chino_parking';
+        $user = 'chinotra_francis';
+        $password = 'Francis@8891';
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-    $tenantId = $_SESSION['tenant_id'];
-
-    // Get tenant-specific PDO connection
-    $pdo = $tenantConnectionManager->getTenantConnection($tenantId);
-
-    // Set error mode to exception
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (Exception $e) {
     die("Database connection failed: " . $e->getMessage());
 }

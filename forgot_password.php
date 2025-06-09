@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter your email or phone number.';
     } else {
         // Find user by email or phone
-        $stmt = $pdo->prepare('SELECT id, username, email, phone, tenant_id FROM users WHERE email = ? OR phone = ?');
+        $stmt = $pdo->prepare('SELECT id, username, email, phone FROM users WHERE email = ? OR phone = ?');
         $stmt->execute([$emailOrPhone, $emailOrPhone]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

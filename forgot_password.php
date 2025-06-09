@@ -4,6 +4,7 @@ require_once __DIR__ . '/config.php';
 
 $error = '';
 $success = '';
+$showForm = false;
 
 require_once __DIR__ . '/SmsService.php';
 

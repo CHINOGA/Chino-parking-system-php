@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $smsService = new SmsService();
 
-                    if ($smsService->sendSms($phone, $message, $nextSmsUsername, $nextSmsPassword, $nextSmsSenderId)) {
+                    if ($smsService->sendSms($phone, $message)) {
                         $success = 'Account created successfully. You will receive an SMS with your tenant code. You can now <a href="login.php">login</a>.';
                     } else {
                         $error = 'Failed to send SMS with tenant code. Please try again.';

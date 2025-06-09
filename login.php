@@ -5,23 +5,36 @@ require_once __DIR__ . '/config.php';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tenant_code = trim($_POST['tenant_code'] ?? '');
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if ($username === '' || $password === '') {
+    if ($tenant_code === '' || $username === '' || $password === '') {
         $error = 'Please fill in all fields.';
     } else {
-        $stmt = $pdo->prepare('SELECT id, tenant_id, password_hash FROM users WHERE username = ?');
-        $stmt->execute([$username]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Get tenant_id from tenant_code
+        $tenantStmt = $pdo->prepare('SELECT id FROM tenants WHERE name = ?');
+        $tenantStmt->execute([$tenant_code]);
+        $tenant = $tenantStmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password_hash'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['tenant_id'] = $user['tenant_id'];
-            header('Location: vehicle_entry.php');
-            exit;
+        if (!$tenant) {
+            $error = 'Invalid tenant code.';
         } else {
-            $error = 'Invalid username or password.';
+            $tenant_id = $tenant['id'];
+
+            // Get user with matching username, tenant_id and verify password
+            $stmt = $pdo->prepare('SELECT id, tenant_id, password_hash FROM users WHERE username = ? AND tenant_id = ?');
+            $stmt->execute([$username, $tenant_id]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['tenant_id'] = $user['tenant_id'];
+                header('Location: vehicle_entry.php');
+                exit;
+            } else {
+                $error = 'Invalid username, password, or tenant code.';
+            }
         }
     }
 }
@@ -116,8 +129,10 @@ button:hover {
         <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
     <form method="post" action="login.php" novalidate>
+        <label for="tenant_code">Tenant Code</label>
+        <input type="text" id="tenant_code" name="tenant_code" required autofocus />
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" required autofocus />
+        <input type="text" id="username" name="username" required />
         <label for="password">Password</label>
         <div class="password-wrapper">
             <input type="password" id="password" name="password" required />

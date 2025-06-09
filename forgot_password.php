@@ -9,59 +9,127 @@ $showForm = false;
 require_once __DIR__ . '/SmsService.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $emailOrPhone = trim($_POST['email_or_phone'] ?? '');
+    if (isset($_POST['send_otp'])) {
+        $emailOrPhone = trim($_POST['email_or_phone'] ?? '');
 
-    if ($emailOrPhone === '') {
-        $error = 'Please enter your email or phone number.';
-    } else {
-        // Find user by email or phone
-        $stmt = $pdo->prepare('SELECT id, username, email, phone FROM users WHERE email = ? OR phone = ?');
-        $stmt->execute([$emailOrPhone, $emailOrPhone]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user) {
-            $error = 'User not found.';
+        if ($emailOrPhone === '') {
+            $error = 'Please enter your email or phone number.';
         } else {
-            // Generate OTP and expiry (10 minutes)
-            $otp = random_int(100000, 999999);
-            $expiresAt = date('Y-m-d H:i:s', time() + 600);
+            // Find user by email or phone
+            $stmt = $pdo->prepare('SELECT id, username, email, phone, tenant_id FROM users WHERE email = ? OR phone = ?');
+            $stmt->execute([$emailOrPhone, $emailOrPhone]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Insert OTP into password_resets table (reuse token column for OTP)
-            $stmt = $pdo->prepare('INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)');
-            $stmt->execute([$user['id'], $otp, $expiresAt]);
-
-            $smsService = new SmsService();
-
-            if (filter_var($emailOrPhone, FILTER_VALIDATE_EMAIL)) {
-                // Send reset email with OTP, username, tenant code
-                $subject = 'Password Reset OTP';
-                $message = "Hello " . htmlspecialchars($user['username']) . ",\n\n";
-                $message .= "Your password reset OTP is: $otp\n";
-                $tenantId = $user['tenant_id'] ?? null;
-                $tenantCode = $tenantId ? htmlspecialchars(getTenantCode($tenantId, $pdo)) : '';
-                $message .= "Your tenant code is: " . $tenantCode . "\n\n";
-                $message .= "This OTP will expire in 10 minutes.\n\n";
-                $message .= "If you did not request a password reset, please ignore this email.\n\n";
-                $message .= "Regards,\nChino Parking System";
-
-                $headers = 'From: no-reply@chinoparkingsystem.com' . "\r\n" .
-                           'Reply-To: no-reply@chinoparkingsystem.com' . "\r\n" .
-                           'X-Mailer: PHP/' . phpversion();
-
-                if (mail($user['email'], $subject, $message, $headers)) {
-                    $success = 'A password reset OTP has been sent to your email address.';
-                } else {
-                    $error = 'Failed to send password reset email. Please try again later.';
-                }
+            if (!$user) {
+                $error = 'User not found.';
             } else {
-                // Send OTP via SMS with username and tenant code
-                $tenantId = $user['tenant_id'] ?? null;
-                $tenantCode = $tenantId ? getTenantCode($tenantId, $pdo) : '';
-                $smsMessage = "Hello " . $user['username'] . "! Your password reset OTP is: $otp. Tenant code: $tenantCode. It expires in 10 minutes.";
-                if ($smsService->sendSms($user['phone'], $smsMessage)) {
-                    $success = 'A password reset OTP has been sent to your phone number.';
+                // Generate OTP and expiry (10 minutes)
+                $otp = random_int(100000, 999999);
+                $expiresAt = date('Y-m-d H:i:s', time() + 600);
+
+                // Insert OTP into password_resets table (reuse token column for OTP)
+                $stmt = $pdo->prepare('INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)');
+                $stmt->execute([$user['id'], $otp, $expiresAt]);
+
+                $smsService = new SmsService();
+
+                if (filter_var($emailOrPhone, FILTER_VALIDATE_EMAIL)) {
+                    // Send reset email with OTP, username, tenant code
+                    $subject = 'Password Reset OTP';
+                    $message = "Hello " . htmlspecialchars($user['username']) . ",\n\n";
+                    $message .= "Your password reset OTP is: $otp\n";
+                    $tenantId = $user['tenant_id'] ?? null;
+                    $tenantCode = $tenantId ? htmlspecialchars(getTenantCode($tenantId, $pdo)) : '';
+                    $message .= "Your tenant code is: " . $tenantCode . "\n\n";
+                    $message .= "This OTP will expire in 10 minutes.\n\n";
+                    $message .= "If you did not request a password reset, please ignore this email.\n\n";
+                    $message .= "Regards,\nChino Parking System";
+
+                    $headers = 'From: no-reply@chinoparkingsystem.com' . "\r\n" .
+                               'Reply-To: no-reply@chinoparkingsystem.com' . "\r\n" .
+                               'X-Mailer: PHP/' . phpversion();
+
+                    if (mail($user['email'], $subject, $message, $headers)) {
+                        $success = 'A password reset OTP has been sent to your email address.';
+                        $showForm = true;
+                    } else {
+                        $error = 'Failed to send password reset email. Please try again later.';
+                    }
                 } else {
-                    $error = 'Failed to send password reset SMS. Please try again later.';
+                    // Send OTP via SMS with username and tenant code
+                    $tenantId = $user['tenant_id'] ?? null;
+                    $tenantCode = $tenantId ? getTenantCode($tenantId, $pdo) : '';
+                    $smsMessage = "Hello " . $user['username'] . "! Your password reset OTP is: $otp. Tenant code: $tenantCode. It expires in 10 minutes.";
+                    if ($smsService->sendSms($user['phone'], $smsMessage)) {
+                        $success = 'A password reset OTP has been sent to your phone number.';
+                        $showForm = true;
+                    } else {
+                        $error = 'Failed to send password reset SMS. Please try again later.';
+                    }
+                }
+            }
+        }
+    } elseif (isset($_POST['reset_password'])) {
+        // Handle OTP verification and password reset
+        $username = trim($_POST['username'] ?? '');
+        $tenantCode = trim($_POST['tenant_code'] ?? '');
+        $otp = trim($_POST['otp'] ?? '');
+        $newPassword = $_POST['new_password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
+
+        if ($username === '' || $tenantCode === '' || $otp === '' || $newPassword === '' || $confirmPassword === '') {
+            $error = 'Please fill in all fields.';
+            $showForm = true;
+        } elseif ($newPassword !== $confirmPassword) {
+            $error = 'Passwords do not match.';
+            $showForm = true;
+        } elseif (strlen($newPassword) < 6) {
+            $error = 'Password must be at least 6 characters.';
+            $showForm = true;
+        } else {
+            // Verify tenant code
+            $stmt = $pdo->prepare('SELECT id FROM tenants WHERE name = ?');
+            $stmt->execute([$tenantCode]);
+            $tenant = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$tenant) {
+                $error = 'Invalid tenant code.';
+                $showForm = true;
+            } else {
+                $tenantId = $tenant['id'];
+
+                // Verify user with username and tenant_id
+                $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ? AND tenant_id = ?');
+                $stmt->execute([$username, $tenantId]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$user) {
+                    $error = 'Invalid username or tenant code.';
+                    $showForm = true;
+                } else {
+                    $userId = $user['id'];
+
+                    // Verify OTP
+                    $stmt = $pdo->prepare('SELECT * FROM password_resets WHERE user_id = ? AND token = ? AND expires_at > NOW()');
+                    $stmt->execute([$userId, $otp]);
+                    $reset = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                    if (!$reset) {
+                        $error = 'Invalid or expired OTP.';
+                        $showForm = true;
+                    } else {
+                        // Update user password
+                        $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+                        $stmt = $pdo->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
+                        $stmt->execute([$passwordHash, $userId]);
+
+                        // Delete used token
+                        $stmt = $pdo->prepare('DELETE FROM password_resets WHERE user_id = ?');
+                        $stmt->execute([$userId]);
+
+                        $success = 'Your password has been reset successfully. You can now <a href="login.php">login</a>.';
+                        $showForm = false;
+                    }
                 }
             }
         }

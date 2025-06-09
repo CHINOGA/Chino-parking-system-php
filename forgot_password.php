@@ -115,6 +115,25 @@ h2 {
 label {
     font-weight: 700;
 }
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #a5b4fc;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #111827;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+}
 button {
     width: 100%;
     background-color: #4f46e5;
@@ -138,14 +157,31 @@ button:hover {
     <?php if ($error): ?>
         <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
-    <?php if ($success): ?>
+    <?php if ($success && !$showForm): ?>
         <div class="success"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
+    <?php if (!$showForm): ?>
     <form method="post" action="forgot_password.php" novalidate>
         <label for="email_or_phone">Email or Phone Number</label>
         <input type="text" id="email_or_phone" name="email_or_phone" required autofocus />
         <button type="submit">Send Reset OTP</button>
     </form>
+    <?php endif; ?>
+    <?php if ($showForm): ?>
+    <form method="post" action="forgot_password.php" novalidate>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autofocus />
+        <label for="tenant_code">Tenant Code</label>
+        <input type="text" id="tenant_code" name="tenant_code" required />
+        <label for="otp">OTP</label>
+        <input type="text" id="otp" name="otp" required />
+        <label for="new_password">New Password</label>
+        <input type="password" id="new_password" name="new_password" required />
+        <label for="confirm_password">Confirm New Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required />
+        <button type="submit" name="reset_password">Reset Password</button>
+    </form>
+    <?php endif; ?>
     <p><a href="login.php" style="color:#a5b4fc;">Back to Login</a></p>
 </div>
 </body>

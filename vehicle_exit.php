@@ -136,6 +136,9 @@ button:hover { background: #0056b3; }
 </style>
 </head>
 <body>
+    <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
 <div class="container">
     <h2>Vehicle Exit</h2>
     <?php if ($error): ?>
@@ -149,5 +152,11 @@ button:hover { background: #0056b3; }
         <button type="submit">Record Exit</button>
     </form>
 </div>
+<script>
+ window.addEventListener('load', () => {
+        const loader = document.getElementById('loader');
+        loader.style.display = 'none';
+    });
+</script>
 </body>
 </html>

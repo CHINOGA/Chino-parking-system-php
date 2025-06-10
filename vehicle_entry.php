@@ -340,6 +340,9 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </head>
 <body>
+    <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
 <?php include __DIR__ . '/navbar.php'; ?>
 <div class="container">
     <h2>Vehicle Entry Form</h2>
@@ -372,5 +375,11 @@ window.addEventListener('DOMContentLoaded', () => {
         <button type="submit">Submit Entry</button>
     </form>
 </div>
+<script>
+ window.addEventListener('load', () => {
+        const loader = document.getElementById('loader');
+        loader.style.display = 'none';
+    });
+</script>
 </body>
 </html>

@@ -123,6 +123,9 @@ button:hover {
 </style>
 </head>
 <body>
+     <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
 <div class="container">
     <h2>Reset Password</h2>
     <?php if ($error): ?>
@@ -143,5 +146,11 @@ button:hover {
     <p><a href="login.php" style="color:#a5b4fc;">Back to Login</a></p>
     <?php endif; ?>
 </div>
+<script>
+ window.addEventListener('load', () => {
+        const loader = document.getElementById('loader');
+        loader.style.display = 'none';
+    });
+</script>
 </body>
 </html>

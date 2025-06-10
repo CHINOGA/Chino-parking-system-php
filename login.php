@@ -123,6 +123,9 @@ button:hover {
 </style>
 </head>
 <body>
+     <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
 <div class="container">
     <h2>Login</h2>
     <?php if (!empty($error)): ?>
@@ -152,6 +155,11 @@ document.getElementById('togglePassword').addEventListener('click', function () 
     passwordInput.setAttribute('type', type);
     this.textContent = type === 'password' ? 'Show' : 'Hide';
 });
+
+ window.addEventListener('load', () => {
+        const loader = document.getElementById('loader');
+        loader.style.display = 'none';
+    });
 </script>
 </body>
 </html>

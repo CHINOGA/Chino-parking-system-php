@@ -70,6 +70,9 @@ button:hover, a.btn-link:hover {
 </style>
 </head>
 <body>
+     <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
 <div class="container">
     <h2>User Profile</h2>
     <div class="info"><strong>Username:</strong> <?= htmlspecialchars($username) ?></div>
@@ -78,5 +81,11 @@ button:hover, a.btn-link:hover {
         <button type="submit" name="logout">Logout</button>
     </form>
 </div>
+<script>
+ window.addEventListener('load', () => {
+        const loader = document.getElementById('loader');
+        loader.style.display = 'none';
+    });
+</script>
 </body>
 </html>

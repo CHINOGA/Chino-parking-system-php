@@ -117,6 +117,9 @@ button:hover {
 </style>
 </head>
 <body>
+     <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
 <div class="container">
     <h2>Change Password</h2>
     <?php if ($error): ?>
@@ -135,5 +138,11 @@ button:hover {
         <button type="submit">Change Password</button>
     </form>
 </div>
+<script>
+ window.addEventListener('load', () => {
+        const loader = document.getElementById('loader');
+        loader.style.display = 'none';
+    });
+</script>
 </body>
 </html>

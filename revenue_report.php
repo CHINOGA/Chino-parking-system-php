@@ -562,6 +562,9 @@ function updatePeakDaysChart(chartDataJson) {
 </script>
 </head>
 <body>
+    <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
 <?php include __DIR__ . '/navbar.php'; ?>
 <div class="container">
     <h2>Revenue Report</h2>
@@ -694,6 +697,10 @@ function updatePeakDaysChart(chartDataJson) {
     </table>
 </div>
 <script>
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    loader.style.display = 'none';
+});
 function updateFirstTimeVehiclesChart(chartDataJson) {
     const chartData = JSON.parse(chartDataJson);
     const ctx = document.getElementById('firstTimeVehiclesChart').getContext('2d');

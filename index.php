@@ -231,10 +231,10 @@
                 padding: 0.5rem 1rem;
             }
         }
-    </style>
+</style>
 </head>
 <body>
-    <div class="loader-container" id="loader">
+     <div class="loader-container" id="loader">
         <div class="loader"></div>
     </div>
     <div class="container">
@@ -322,7 +322,7 @@ Contact Chino Park at: <a href="tel:+255716959578">0716 959 578</a>
         });
     </script>
     <script>
-        window.addEventListener('load', () => {
+         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
             loader.style.display = 'none';
         });

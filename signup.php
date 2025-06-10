@@ -41,44 +41,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->fetch()) {
                 $error = 'Username, email, or phone number already exists.';
             } else {
+                 // Check if tenant code already exists
+
                 // Generate tenant code and insert tenant
                 $tenantCode = generateTenantCode($pdo);
+                $stmt = $pdo->prepare('SELECT id FROM tenants WHERE name = ?');
+                $stmt->execute([$tenantCode]);
+                if ($stmt->fetch()) {
+                    $error = 'Tenant code already exists. Please try again.';
+                } else {
 
-                try {
-                    $pdo->beginTransaction();
+                    try {
+                        $pdo->beginTransaction();
 
-                    $tenantStmt = $pdo->prepare('INSERT INTO tenants (name) VALUES (?)');
-                    if (!$tenantStmt->execute([$tenantCode])) {
-                        throw new Exception('Failed to create tenant.');
+                        $tenantStmt = $pdo->prepare('INSERT INTO tenants (name) VALUES (?)');
+                        if (!$tenantStmt->execute([$tenantCode])) {
+                            throw new Exception('Failed to create tenant.');
+                        }
+                        $tenantId = $pdo->lastInsertId();
+
+                        // Insert new user with tenant_id
+                        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+                        $stmt = $pdo->prepare('INSERT INTO users (tenant_id, username, email, phone, password_hash) VALUES (?, ?, ?, ?, ?)');
+                        if (!$stmt->execute([$tenantId, $username, $email, $phone, $passwordHash])) {
+                            throw new Exception('Failed to create user.');
+                        }
+
+                        // Send SMS with username and tenant code using NextSMS API
+                        $message = "Welcome $username! Your tenant code is $tenantCode. Use it to login.";
+
+                        $nextSmsUsername = $nextsmsUsername;
+                        $nextSmsPassword = $nextsmsPassword;
+                        $nextSmsSenderId = $nextsmsSenderId;
+
+                        $smsService = new SmsService();
+
+                        if ($smsService->sendSms($phone, $message)) {
+                            $pdo->commit();
+                            $success = 'Account created successfully. You will receive an SMS with your tenant code. You can now <a href="login.php">login</a>.';
+                        } else {
+                            $pdo->rollBack();
+                            throw new Exception('Failed to send SMS with tenant code.');
+                        }
+                    } catch (Exception $e) {
+                        $pdo->rollBack();
+                        error_log("Signup failed: " . $e->getMessage());
+                        $error = 'Failed to create account. Please try again.';
                     }
-                    $tenantId = $pdo->lastInsertId();
-
-                    // Insert new user with tenant_id
-                    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-                    $stmt = $pdo->prepare('INSERT INTO users (tenant_id, username, email, phone, password_hash) VALUES (?, ?, ?, ?, ?)');
-                    if (!$stmt->execute([$tenantId, $username, $email, $phone, $passwordHash])) {
-                        throw new Exception('Failed to create user.');
-                    }
-
-                    // Send SMS with username and tenant code using NextSMS API
-                    $message = "Welcome $username! Your tenant code is $tenantCode. Use it to login.";
-
-                    $nextSmsUsername = NEXTSMS_USERNAME;
-                    $nextSmsPassword = NEXTSMS_PASSWORD;
-                    $nextSmsSenderId = NEXTSMS_SENDER_ID;
-
-                    $smsService = new SmsService();
-
-                    if ($smsService->sendSms($phone, $message, $nextSmsUsername, $nextSmsPassword, $nextSmsSenderId)) {
-                        $pdo->commit();
-                        $success = 'Account created successfully. You will receive an SMS with your tenant code. You can now <a href="login.php">login</a>.';
-                    } else {
-                        throw new Exception('Failed to send SMS with tenant code.');
-                    }
-                } catch (Exception $e) {
-                    $pdo->rollBack();
-                    error_log("Signup failed: " . $e->getMessage());
-                    $error = 'Failed to create account. Please try again.';
                 }
             }
         }

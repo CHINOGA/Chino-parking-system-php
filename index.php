@@ -6,9 +6,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Chino Car Parking System - Secure and Affordable Parking in Dar es Salaam</title>
+<title>Chino Park - Secure and Affordable Parking in Dar es Salaam</title>
     <meta name="description" content="Find secure and affordable car parking at Chino Car Parking System in Dar es Salaam. Conveniently located at Kimara, Golani Kijiweni. Book your parking spot today!" />
-    <meta name="keywords" content="Chino Car Parking System, car parking, parking in Dar es Salaam, secure parking, affordable parking, Kimara parking, Golani Kijiweni parking" />
+<meta name="keywords" content="Chino Park, car parking, parking in Dar es Salaam, secure parking, affordable parking, Kimara parking, Golani Kijiweni parking" />
     <link rel="stylesheet" href="custom.css" />
     <style>
         /* Reset and base styles */
@@ -236,7 +236,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="#" class="navbar-brand">Chino Car Parking System</a>
+<a href="#" class="navbar-brand">Chino Park</a>
             <div class="hamburger" id="hamburger">
                 <div></div>
                 <div></div>
@@ -252,7 +252,7 @@
             </nav>
         </header>
         <section class="hero">
-            <h1>Welcome to Chino Car Parking System</h1>
+<h1>Welcome to Chino Park</h1>
             <p>Your trusted parking solution in Dar es Salaam. We provide secure and affordable parking area at Chino Park located at Kimara, Golani Kijiweni in Dar es Salaam.</p>
             <a href="tel:+255716959578" class="btn-primary">Call to Book Now</a>
         </section>
@@ -263,7 +263,7 @@
                 width="100%" height="300" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </section>
         <section id="features" class="features">
-            <h3>Key Features of Chino Car Parking System</h3>
+<h3>Key Features of Chino Park</h3>
             <ul>
                 <li>Secure and monitored parking area for your peace of mind</li>
                 <li>Convenient location at Kimara, Golani Kijiweni in Dar es Salaam</li>
@@ -273,18 +273,18 @@
             </ul>
         </section>
         <section id="testimonials" class="testimonials">
-            <h3>What Our Customers Say About Chino Car Parking System</h3>
+<h3>What Our Customers Say About Chino Park</h3>
             <blockquote>"Safe and reliable parking service. Highly recommend Chino Car Parking System!" - John M.</blockquote>
             <blockquote>"Convenient location and friendly staff. Will definitely use Chino Car Parking System again." - Asha K.</blockquote>
             <blockquote>"Affordable and secure parking solution. Great experience overall with Chino Car Parking System." - Michael T.</blockquote>
         </section>
         <section id="hours-pricing" class="hours-pricing">
-            <h3>Chino Car Parking System - Operating Hours & Pricing</h3>
+<h3>Chino Park - Operating Hours & Pricing</h3>
             <p><strong>Operating Hours:</strong> 6:00 AM - 10:00 PM (Everyday)</p>
             <p><strong>Pricing:</strong> TZS 1,000 per hour, discounts for monthly subscriptions</p>
         </section>
         <section id="faq" class="faq">
-            <h3>Frequently Asked Questions About Chino Car Parking System</h3>
+<h3>Frequently Asked Questions About Chino Park</h3>
             <dl>
                 <dt>Is the parking area at Chino Car Parking System secure?</dt>
                 <dd>Yes, we have 24/7 surveillance and security personnel on site ensuring the safety of your vehicle.</dd>
@@ -304,10 +304,10 @@
             </p>
         </section>
         <section id="contact" class="contact">
-            <p>Contact Chino Car Parking System at: <a href="tel:+255716959578">0716 959 578</a></p>
+Contact Chino Park at: <a href="tel:+255716959578">0716 959 578</a>
         </section>
         <footer>
-            &copy; 2024 Chino Car Parking System Solution. All rights reserved.
+&copy; 2024 Chino Park Solution. All rights reserved.
         </footer>
     </div>
     <script>

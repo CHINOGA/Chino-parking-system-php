@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Chno Park</title>
+    <title>Chino Car Parking System - Secure and Affordable Parking in Dar es Salaam</title>
+    <meta name="description" content="Find secure and affordable car parking at Chino Car Parking System in Dar es Salaam. Conveniently located at Kimara, Golani Kijiweni. Book your parking spot today!" />
+    <meta name="keywords" content="Chino Car Parking System, car parking, parking in Dar es Salaam, secure parking, affordable parking, Kimara parking, Golani Kijiweni parking" />
     <link rel="stylesheet" href="custom.css" />
     <style>
         /* Reset and base styles */
@@ -231,7 +236,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="#" class="navbar-brand">Chino Park</a>
+            <a href="#" class="navbar-brand">Chino Car Parking System</a>
             <div class="hamburger" id="hamburger">
                 <div></div>
                 <div></div>
@@ -247,51 +252,51 @@
             </nav>
         </header>
         <section class="hero">
-            <h1>Welcome to Chino Car Parking</h1>
-            <p>Parking area available at Chino Park located at Kimara, Golani Kijiweni in Dar es Salaam.</p>
+            <h1>Welcome to Chino Car Parking System</h1>
+            <p>Your trusted parking solution in Dar es Salaam. We provide secure and affordable parking area at Chino Park located at Kimara, Golani Kijiweni in Dar es Salaam.</p>
             <a href="tel:+255716959578" class="btn-primary">Call to Book Now</a>
         </section>
         <section class="map-container">
             <h3>Our Location</h3>
-<iframe
+            <iframe
                 src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15869.123456789!2d39.152002!3d-6.813609!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4c1234567890%3A0xabcdef1234567890!2sChino%20Park!5e0!3m2!1sen!2stz!4v1680000000000!5m2!1sen!2stz"
                 width="100%" height="300" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </section>
         <section id="features" class="features">
-            <h3>Why Choose Chino Car Parking?</h3>
+            <h3>Key Features of Chino Car Parking System</h3>
             <ul>
-                <li>Secure and monitored parking area</li>
-                <li>Convenient location at Kimara, Golani Kijiweni</li>
-                <li>Affordable pricing and flexible options</li>
-                <li>24/7 customer support and assistance</li>
-                <li>Easy booking and quick entry/exit process</li>
+                <li>Secure and monitored parking area for your peace of mind</li>
+                <li>Convenient location at Kimara, Golani Kijiweni in Dar es Salaam</li>
+                <li>Affordable pricing and flexible parking options to suit your needs</li>
+                <li>24/7 customer support and assistance for any inquiries</li>
+                <li>Easy booking and quick entry/exit process for a hassle-free experience</li>
             </ul>
         </section>
         <section id="testimonials" class="testimonials">
-            <h3>What Our Customers Say</h3>
-            <blockquote>"Safe and reliable parking service. Highly recommend!" - John M.</blockquote>
-            <blockquote>"Convenient location and friendly staff. Will use again." - Asha K.</blockquote>
-            <blockquote>"Affordable and secure. Great experience overall." - Michael T.</blockquote>
+            <h3>What Our Customers Say About Chino Car Parking System</h3>
+            <blockquote>"Safe and reliable parking service. Highly recommend Chino Car Parking System!" - John M.</blockquote>
+            <blockquote>"Convenient location and friendly staff. Will definitely use Chino Car Parking System again." - Asha K.</blockquote>
+            <blockquote>"Affordable and secure parking solution. Great experience overall with Chino Car Parking System." - Michael T.</blockquote>
         </section>
         <section id="hours-pricing" class="hours-pricing">
-            <h3>Operating Hours & Pricing</h3>
+            <h3>Chino Car Parking System - Operating Hours & Pricing</h3>
             <p><strong>Operating Hours:</strong> 6:00 AM - 10:00 PM (Everyday)</p>
             <p><strong>Pricing:</strong> TZS 1,000 per hour, discounts for monthly subscriptions</p>
         </section>
         <section id="faq" class="faq">
-            <h3>Frequently Asked Questions</h3>
+            <h3>Frequently Asked Questions About Chino Car Parking System</h3>
             <dl>
-                <dt>Is the parking area secure?</dt>
-                <dd>Yes, we have 24/7 surveillance and security personnel on site.</dd>
-                <dt>Can I reserve a parking spot in advance?</dt>
-                <dd>Yes, you can call us to book your spot ahead of time.</dd>
-                <dt>What payment methods do you accept?</dt>
-                <dd>We accept cash, mobile money, and credit/debit cards.</dd>
+                <dt>Is the parking area at Chino Car Parking System secure?</dt>
+                <dd>Yes, we have 24/7 surveillance and security personnel on site ensuring the safety of your vehicle.</dd>
+                <dt>Can I reserve a parking spot in advance at Chino Car Parking System?</dt>
+                <dd>Yes, you can call us to book your spot ahead of time for a guaranteed parking space.</dd>
+                <dt>What payment methods do you accept at Chino Car Parking System?</dt>
+                <dd>We accept cash, mobile money, and credit/debit cards for your convenience.</dd>
             </dl>
         </section>
         <section class="social">
-            <h3>Connect with Us</h3>
-            <p>Follow us on social media for updates and promotions:</p>
+            <h3>Connect with Chino Car Parking System</h3>
+            <p>Follow us on social media for updates, promotions, and parking tips:</p>
             <p>
                 <a href="#" aria-label="Facebook" title="Facebook">Facebook</a>
                 <a href="#" aria-label="Twitter" title="Twitter">Twitter</a>
@@ -299,10 +304,10 @@
             </p>
         </section>
         <section id="contact" class="contact">
-            <p>Contact us at: <a href="tel:+255716959578">0716 959 578</a></p>
+            <p>Contact Chino Car Parking System at: <a href="tel:+255716959578">0716 959 578</a></p>
         </section>
         <footer>
-            &copy; 2024 Chino Car Parking Solution. All rights reserved.
+            &copy; 2024 Chino Car Parking System Solution. All rights reserved.
         </footer>
     </div>
     <script>

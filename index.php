@@ -234,9 +234,12 @@
     </style>
 </head>
 <body>
+    <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
     <div class="container">
         <header>
-<a href="#" class="navbar-brand">Chino Park</a>
+            <a href="#" class="navbar-brand">Chino Park</a>
             <div class="hamburger" id="hamburger">
                 <div></div>
                 <div></div>
@@ -316,6 +319,12 @@ Contact Chino Park at: <a href="tel:+255716959578">0716 959 578</a>
 
         hamburger.addEventListener('click', () => {
             navMenu.classList.toggle('active');
+        });
+    </script>
+    <script>
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'none';
         });
     </script>
 </body>

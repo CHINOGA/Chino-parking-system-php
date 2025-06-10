@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $tenantStmt = $pdo->prepare('INSERT INTO tenants (name) VALUES (?)');
             if (!$tenantStmt->execute([$tenantCode])) {
-                $error = 'Failed to create tenant. Please try again.';
+                $error = 'Failed to create tenant. Please try again. ' . $tenantStmt->errorInfo()[2];
             } else {
                 $tenantId = $pdo->lastInsertId();
 
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $error = 'Failed to send SMS with tenant code. Please try again.';
                     }
                 } else {
-                    $error = 'Failed to create account. Please try again.';
+                    $error = 'Failed to create account. Please try again. ' . $stmt->errorInfo()[2];
                 }
             }
         }

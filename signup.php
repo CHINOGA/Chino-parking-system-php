@@ -6,8 +6,13 @@ require_once __DIR__ . '/sms_send.php';
 $error = '';
 $success = '';
 
-function generateTenantCode() {
-    return strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+function generateTenantCode($pdo) {
+    do {
+        $code = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+        $stmt = $pdo->prepare('SELECT id FROM tenants WHERE name = ?');
+        $stmt->execute([$code]);
+    } while ($stmt->fetch());
+    return $code;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,32 +26,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please fill in all fields.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please enter a valid email address.';
-    } elseif (!preg_match('/^\+?[0-9]{7,15}$/', $phone)) {
-        $error = 'Please enter a valid phone number.';
-    } elseif ($password !== $confirmPassword) {
-        $error = 'Passwords do not match.';
-    } elseif (strlen($password) < 6) {
-        $error = 'Password must be at least 6 characters.';
     } else {
-        // Check if username or email or phone exists
-        $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ? OR email = ? OR phone = ?');
-        $stmt->execute([$username, $email, $phone]);
-        if ($stmt->fetch()) {
-            $error = 'Username, email, or phone number already exists.';
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+        if (!preg_match('/^0\d{9}$/', $phone)) {
+            $error = 'Phone number must be 10 digits starting with 0 (e.g., 0712345678).';
+        } elseif ($password !== $confirmPassword) {
+            $error = 'Passwords do not match.';
+        } elseif (strlen($password) < 6) {
+            $error = 'Password must be at least 6 characters.';
         } else {
-            // Generate tenant code and insert tenant
-            $tenantCode = generateTenantCode();
-
-            $tenantStmt = $pdo->prepare('INSERT INTO tenants (name) VALUES (?)');
-            if (!$tenantStmt->execute([$tenantCode])) {
-                $error = 'Failed to create tenant. Please try again. ' . $tenantStmt->errorInfo()[2];
+            // Check if username or email or phone exists
+            $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ? OR email = ? OR phone = ?');
+            $stmt->execute([$username, $email, $phone]);
+            if ($stmt->fetch()) {
+                $error = 'Username, email, or phone number already exists.';
             } else {
-                $tenantId = $pdo->lastInsertId();
+                // Generate tenant code and insert tenant
+                $tenantCode = generateTenantCode($pdo);
 
-                // Insert new user with tenant_id
-                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare('INSERT INTO users (tenant_id, username, email, phone, password_hash) VALUES (?, ?, ?, ?, ?)');
-                if ($stmt->execute([$tenantId, $username, $email, $phone, $passwordHash])) {
+                try {
+                    $pdo->beginTransaction();
+
+                    $tenantStmt = $pdo->prepare('INSERT INTO tenants (name) VALUES (?)');
+                    if (!$tenantStmt->execute([$tenantCode])) {
+                        throw new Exception('Failed to create tenant.');
+                    }
+                    $tenantId = $pdo->lastInsertId();
+
+                    // Insert new user with tenant_id
+                    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare('INSERT INTO users (tenant_id, username, email, phone, password_hash) VALUES (?, ?, ?, ?, ?)');
+                    if (!$stmt->execute([$tenantId, $username, $email, $phone, $passwordHash])) {
+                        throw new Exception('Failed to create user.');
+                    }
+
                     // Send SMS with username and tenant code using NextSMS API
                     $message = "Welcome $username! Your tenant code is $tenantCode. Use it to login.";
 
@@ -56,13 +69,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $smsService = new SmsService();
 
-                    if ($smsService->sendSms($phone, $message)) {
+                    if ($smsService->sendSms($phone, $message, $nextSmsUsername, $nextSmsPassword, $nextSmsSenderId)) {
+                        $pdo->commit();
                         $success = 'Account created successfully. You will receive an SMS with your tenant code. You can now <a href="login.php">login</a>.';
                     } else {
-                        $error = 'Failed to send SMS with tenant code. Please try again.';
+                        throw new Exception('Failed to send SMS with tenant code.');
                     }
-                } else {
-                    $error = 'Failed to create account. Please try again. ' . $stmt->errorInfo()[2];
+                } catch (Exception $e) {
+                    $pdo->rollBack();
+                    error_log("Signup failed: " . $e->getMessage());
+                    $error = 'Failed to create account. Please try again.';
                 }
             }
         }

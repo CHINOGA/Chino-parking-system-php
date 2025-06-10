@@ -5,8 +5,8 @@ require_once __DIR__ . '/config.php';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tenant_code = trim($_POST['tenant_code'] ?? '');
-    $username = trim($_POST['username'] ?? '');
+    $tenant_code = preg_replace('/[^A-Za-z0-9]/', '', trim($_POST['tenant_code'] ?? ''));
+    $username = preg_replace('/[^A-Za-z0-9_]/', '', trim($_POST['username'] ?? ''));
     $password = $_POST['password'] ?? '';
 
     if ($tenant_code === '' || $username === '' || $password === '') {
@@ -27,13 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$username, $tenant_id]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user && password_verify($password, $user['password_hash'])) {
+            if (!$user) {
+                $error = 'Invalid username or tenant code combination.';
+            } elseif (!password_verify($password, $user['password_hash'])) {
+                $error = 'Incorrect password.';
+            } else {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['tenant_id'] = $user['tenant_id'];
                 header('Location: vehicle_entry.php');
                 exit;
-            } else {
-                $error = 'Invalid username, password, or tenant code.';
             }
         }
     }

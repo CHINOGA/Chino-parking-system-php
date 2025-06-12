@@ -37,31 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  // Send SMS with OTP
                 $message = "Your OTP is: $otp. It will expire in 10 minutes.";
 
-                $nextsmsUsername = $nextsmsUsername;
-                $nextsmsPassword = $nextsmsPassword;
-                $nextsmsSenderId = $nextsmsSenderId;
+                $nextsmsUsername = $config['nextsmsUsername'];
+                $nextsmsPassword = $config['nextsmsPassword'];
+                $nextsmsSenderId = $config['nextsmsSenderId'];
 
                 $smsService = new SmsService();
 
-                if ($smsService->sendSms($user['phone'], $message, $nextsmsUsername, $nextsmsPassword, $nextsmsSenderId)) {
-                    $success = 'OTP sent to your registered phone number. Please check your phone.';
-                    $showForm = true;
-                } else {
-                    $error = 'Failed to send SMS with OTP. Please try again.';
-                }
-            }
-        }
-
-                 // Send SMS with OTP
-                $message = "Your OTP is: $otp. It will expire in 10 minutes.";
-
-                $nextsmsUsername = $nextsmsUsername;
-                $nextsmsPassword = $nextsmsPassword;
-                $nextsmsSenderId = $nextsmsSenderId;
-
-                $smsService = new SmsService();
-
-                if ($smsService->sendSms($user['phone'], $message, $nextsmsUsername, $nextsmsPassword, $nextsmsSenderId)) {
+                if ($smsService->sendSms($user['phone'], $message)) {
                     $success = 'OTP sent to your registered phone number. Please check your phone.';
                     $showForm = true;
                 } else {

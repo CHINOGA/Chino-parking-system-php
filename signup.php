@@ -1,5 +1,6 @@
 <?php
 session_start();
+error_log("Signup page accessed: " . date('Y-m-d H:i:s'));
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/sms_send.php';
 
@@ -16,6 +17,7 @@ function generateTenantCode($pdo) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    error_log("Signup form submitted: " . date('Y-m-d H:i:s'));
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');

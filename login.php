@@ -95,18 +95,6 @@ input[type="password"]:focus {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
 }
-.password-wrapper {
-    position: relative;
-}
-.password-toggle {
-    position: absolute;
-    top: 50%;
-    right: 0.75rem;
-    transform: translateY(-50%);
-    cursor: pointer;
-    user-select: none;
-    color: #6366f1;
-}
 button {
     width: 100%;
     background-color: #4f46e5;
@@ -125,9 +113,6 @@ button:hover {
 </style>
 </head>
 <body>
-     <div class="loader-container" id="loader">
-        <div class="loader"></div>
-    </div>
 <div class="container">
     <h2>Login</h2>
     <?php if (!empty($error)): ?>
@@ -139,10 +124,7 @@ button:hover {
         <label for="username">Username</label>
         <input type="text" id="username" name="username" required />
         <label for="password">Password</label>
-        <div class="password-wrapper">
-            <input type="password" id="password" name="password" required />
-            <span class="password-toggle" id="togglePassword">Show</span>
-        </div>
+        <input type="password" id="password" name="password" required />
         <button type="submit">Login</button>
     </form>
     <p style="margin-top: 1rem; text-align: center;">
@@ -150,18 +132,5 @@ button:hover {
         <a href="forgot_password.php" style="color:#a5b4fc;">Forgot Password?</a>
     </p>
 </div>
-<script>
-document.getElementById('togglePassword').addEventListener('click', function () {
-    const passwordInput = document.getElementById('password');
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-    this.textContent = type === 'password' ? 'Show' : 'Hide';
-});
-
- window.addEventListener('load', () => {
-        const loader = document.getElementById('loader');
-        loader.style.display = 'none';
-    });
-</script>
 </body>
 </html>

@@ -1,6 +1,5 @@
 <?php
 session_start();
-error_log("Signup page accessed: " . date('Y-m-d H:i:s'));
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/sms_send.php';
 
@@ -17,7 +16,6 @@ function generateTenantCode($pdo) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    error_log("Signup form submitted: " . date('Y-m-d H:i:s'));
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
@@ -43,8 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->fetch()) {
                 $error = 'Username, email, or phone number already exists.';
             } else {
-                 // Check if tenant code already exists
-
                 // Generate tenant code and insert tenant
                 $tenantCode = generateTenantCode($pdo);
                 $stmt = $pdo->prepare('SELECT id FROM tenants WHERE name = ?');
@@ -52,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($stmt->fetch()) {
                     $error = 'Tenant code already exists. Please try again.';
                 } else {
-
                     try {
                         $pdo->beginTransaction();
 
@@ -71,10 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         // Send SMS with username and tenant code using NextSMS API
                         $message = "Welcome $username! Your tenant code is $tenantCode. Use it to login.";
-
-                        $nextSmsUsername = $nextsmsUsername;
-                        $nextSmsPassword = $nextsmsPassword;
-                        $nextSmsSenderId = $nextsmsSenderId;
 
                         $smsService = new SmsService();
 
@@ -174,9 +165,6 @@ button:hover {
 </style>
 </head>
 <body>
-     <div class="loader-container" id="loader">
-        <div class="loader"></div>
-    </div>
 <div class="container">
     <h2>Sign Up</h2>
     <?php if ($error): ?>
@@ -200,11 +188,5 @@ button:hover {
     </form>
     <p><a href="login.php" style="color:#a5b4fc;">Back to Login</a></p>
 </div>
-<script>
- window.addEventListener('load', () => {
-        const loader = document.getElementById('loader');
-        loader.style.display = 'none';
-    });
-</script>
 </body>
 </html>

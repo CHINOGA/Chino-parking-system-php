@@ -16,6 +16,7 @@ function generateTenantCode($pdo) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    error_log("Signup POST data: " . print_r($_POST, true));
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
@@ -79,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } catch (Exception $e) {
                         $pdo->rollBack();
                         error_log("Signup failed: " . $e->getMessage());
-                        $error = 'Failed to create account. Please try again.';
+                        $error = 'Failed to create account: ' . htmlspecialchars($e->getMessage());
                     }
                 }
             }

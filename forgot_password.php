@@ -9,6 +9,7 @@ $showForm = false;
 require_once __DIR__ . '/SmsService.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    error_log("Forgot Password POST data: " . print_r($_POST, true));
     if (isset($_POST['send_otp'])) {
         $emailOrPhone = trim($_POST['email_or_phone'] ?? '');
 
@@ -23,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$user) {
                 $error = 'User not found.';
             } else {
+                error_log("Selected tenant ID: " . $user['tenant_id']);
                 // Generate OTP and expiry (10 minutes)
                 $otp = random_int(100000, 999999);
                 $expiresAt = date('Y-m-d H:i:s', time() + 600);
